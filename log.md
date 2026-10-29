@@ -1185,6 +1185,60 @@ bash -n + dry runs: setup_pi.sh, install_app.sh, kiosk.sh
 
 ---
 
+## 2026-10-29 — Bring-up tools: smoke gate, free play, per-key calibration
+
+Kevin reports the hardware built, the Pi set up and the touchscreen UI running. This
+session builds the next three test objectives; ScoreForge (song → MIDI / playable file)
+will live in its own repo and connect later.
+
+**Done**
+- **Objective 0 — `tools/hw/smoke.py`**: one guided run — preflight, three strip patterns
+  with yes/no questions, then all 88 keys lit through the real map as they are played.
+  Reports dead / stuck / out-of-range keys, velocity range, whether the pedal arrived and
+  the Pi-side note → LED time; writes `~/.fingerlight/smoke-report.json` and a block for
+  this log. [[build]] "The short route".
+- **Objective 1 — Free play** (`firmware/src/fingerlight/freeplay.py`, new tab): the bar
+  lights whatever is played whenever no attempt is live. Styles solid / split / rainbow /
+  velocity, ten swatches, split key, release fade, sustain pedal hold. [[app]] §9.
+- **Sustain pedal**: `MidiDecoder(pedal=True)` emits `PedalEvent` edges for CC 64; the
+  default decoder is unchanged, and practice still ignores the pedal.
+- **Objective 2 — per-key calibration** (Settings → *Calibrate keys…*): select a key by
+  playing it, nudge its pair one LED at a time, shift all, reset; *Save as default* writes
+  `~/.fingerlight/led_offsets.json`, loaded on every start. Applied in `note_to_leds` on top
+  of the unchanged upstream formula. [[app]] §9.
+
+**Evidence**
+```
+python -m pytest firmware/tests score/tests app/tests tools/tests -q
+  -> 261 passed (143 firmware, 68 score, 45 app, 5 tools)
+python tools/hw/smoke.py --dry-run --yes y   -> runs end to end off a Pi (preflight FAILs
+  for spidev/mido, as it should on a PC); the key step is tested against a fake mido
+Chromium at 800x480: Free play (4 styles, with/without a score open), Settings, Calibrate
+  -> 0 elements outside the panel, 0 buttons under 52 px (bar the 88 overview cells),
+  0 console errors; /preview bar lights, holds under Shift-as-pedal, fades to dark
+```
+
+**Found / changed**
+- **A stopped attempt could restart itself.** After *Stop*, the next key press in wait mode
+  called `transport("play")` on the summarised attempt, and a second Stop wrote a second
+  history row. Attempts now carry `ended`; an ended attempt ignores keys and transport.
+- **"Shift all →" could never work with a strict pair check**: the centred tape puts C8 on
+  LED 174 and A0 on LED 0. Only the key's own LED must stay on the strip; its partner is
+  already clamped.
+- A quadratic fade computed from float times never reaches exactly 0 (1.4 − 1.0 ≠ 0.4), so a
+  key could "fade" forever at an invisible level; anything under one 8-bit step is dark.
+
+**Verified vs. assumed**
+- VERIFIED on the PC: the above.
+- **UNVERIFIED — needs the Pi:** all of it on hardware — the smoke run itself, pedal CC 64
+  from the PX-S1100 (`midi_test.py watch` shows it), free-play latency by eye, and whether
+  one-LED calibration steps are fine enough through the diffuser.
+
+**Next:** run `tools/hw/smoke.py` on the Pi and paste its block here; calibrate; then
+objective 3 (play a song from the Pi through the piano) once ScoreForge emits MIDI.
+
+---
+
 ## Entry template
 
 ```markdown

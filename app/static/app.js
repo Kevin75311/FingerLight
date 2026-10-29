@@ -16,6 +16,15 @@ let selected = null;          // library selection
 let handsPick = null;         // library hand filter (null = settings default)
 let lastSummary = null;       // summary id already shown
 let dragging = false;         // brightness slider in use: do not re-render under it
+let fpSide = "L";             // free play, split style: which side the swatches set
+let calCloseArmed = 0;        // calibrate: first Close tap with unsaved changes arms it
+
+// free-play swatches: warm, ivory, the finger hues, then the colours the palette avoids
+const FP_COLORS = ["#ffb060", "#ffe8c4", "#ff2800", "#ff9600", "#d2ff00",
+                   "#00ff5a", "#00e6c8", "#2080ff", "#a040ff", "#ff30c0"];
+const NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const noteName = (p) => NAMES[p % 12] + (Math.floor(p / 12) - 1);
+const isBlack = (p) => [1, 3, 6, 8, 10].includes(p % 12);
 
 // ------------------------------------------------------------------- utilities
 
@@ -102,12 +111,15 @@ function render() {
   const pal = S.palettes[S.settings.palette];
   pal.forEach((c, i) => document.documentElement.style.setProperty("--f" + (i + 1), c));
 
-  document.querySelectorAll("#tabs .tab").forEach((b) =>
-    b.classList.toggle("on", b.dataset.go === screen));
+  document.querySelectorAll("#tabs .tab").forEach((b) => {
+    b.classList.toggle("on", b.dataset.go === screen);
+    b.disabled = !!S.calibration;
+  });
   renderPills();
   if (screen === "settings" && dragging) return;
   const fn = { library: renderLibrary, play: renderPlay, session: renderSession,
-               settings: renderSettings }[screen] || renderLibrary;
+               free: renderFree, settings: renderSettings,
+               calibrate: renderCalibrate }[screen] || renderLibrary;
   view.innerHTML = fn();
 }
 
@@ -189,9 +201,11 @@ function renderPlay() {
       '<button class="btn primary" data-go="library">Library</button></div>';
   }
   const along = p.mode === "along";
+  const over = p.finished || p.ended;
   let center;
-  if (p.finished) {
-    center = '<div class="chips" style="align-self:center"><div class="chip finished">Done &mdash; ' +
+  if (over) {
+    center = '<div class="chips" style="align-self:center"><div class="chip finished">' +
+      (p.finished ? "Done" : "Ended") + " &mdash; " +
       pct(p.accuracy) + ' correct</div></div><div class="next"><button class="btn small" data-go="session">See the session &rarr;</button></div>';
   } else {
     const nx = p.next[0] ? "next " + p.next[0].map((c) => mini(c, false)).join("") : "last event";
@@ -201,7 +215,7 @@ function renderPlay() {
       p.now.map(chip).join("") + "</div>" + '<div class="next">' + nx + th + "</div>";
   }
   let overlay = "";
-  if (!p.finished && !p.running) {
+  if (!over && !p.running) {
     overlay = along
       ? '<div class="overlay"><div>Press ' + "&#9654;" + " to start<small>one-second lead-in &middot; " + p.tempo + "% tempo</small></div></div>"
       : '<div class="overlay"><div>Paused<small>play the lit key, or press &#9654;</small></div></div>';
@@ -216,7 +230,7 @@ function renderPlay() {
   return '<div style="display:grid;grid-template-rows:1fr auto;height:424px">' +
     '<div class="body cue">' +
     '<div class="card now"><div class="label"><span class="ttl">' + esc(p.title) + "</span><span>" +
-    (p.finished ? "FINISHED" : "PLAY NOW &mdash; " + handWord(p.now_hands.length === 1 ? p.now_hands[0] : "both")) +
+    (over ? (p.finished ? "FINISHED" : "ENDED") : "PLAY NOW &mdash; " + handWord(p.now_hands.length === 1 ? p.now_hands[0] : "both")) +
     "</span></div>" + center + overlay + "</div>" +
     '<div class="card meter">' +
     '<div class="row"><span class="k">this attempt</span><span class="v">' + pct(p.accuracy) + "</span></div>" +
@@ -229,18 +243,18 @@ function renderPlay() {
     (misses ? "var(--warn)" : "var(--text)") + '">' + misses + "</span></div>" +
     "</div></div>" +
     '<div class="transport">' +
-    '<button class="' + loopBtn + '" data-act="t" data-cmd="loop"' + (p.finished ? " disabled" : "") + ">" + icon("loop") + "<span>" + loopLbl + "</span></button>" +
-    '<button class="btn nav" data-act="t" data-cmd="prev" aria-label="previous event"' + (p.finished ? " disabled" : "") + ">" + icon("prev") + "</button>" +
+    '<button class="' + loopBtn + '" data-act="t" data-cmd="loop"' + (over ? " disabled" : "") + ">" + icon("loop") + "<span>" + loopLbl + "</span></button>" +
+    '<button class="btn nav" data-act="t" data-cmd="prev" aria-label="previous event"' + (over ? " disabled" : "") + ">" + icon("prev") + "</button>" +
     '<button class="btn primary play" data-act="t" data-cmd="toggle" aria-label="play or pause"' +
-    (p.finished ? " disabled" : "") + ">" + icon(p.running ? "pause" : "play") + "</button>" +
-    '<button class="btn nav" data-act="t" data-cmd="next" aria-label="skip event"' + (p.finished ? " disabled" : "") + ">" + icon("next") + "</button>" +
+    (over ? " disabled" : "") + ">" + icon(p.running ? "pause" : "play") + "</button>" +
+    '<button class="btn nav" data-act="t" data-cmd="next" aria-label="skip event"' + (over ? " disabled" : "") + ">" + icon("next") + "</button>" +
     '<div class="grow"></div>' +
     '<div class="tempo"><button class="btn small" data-act="t" data-cmd="tempo" data-arg="-10"' + (along ? "" : " disabled") + ">&minus;</button>" +
     '<div class="val"' + (along ? "" : ' style="opacity:.35"') + ">" + p.tempo + '<span style="font-size:13px;color:var(--dim)">%</span></div>' +
     '<button class="btn small" data-act="t" data-cmd="tempo" data-arg="10"' + (along ? "" : " disabled") + ">+</button></div>" +
     '<button class="btn small ghost mode" data-act="set" data-k="mode" data-v="' + (along ? "wait" : "along") + '">' +
     (along ? "mode: along" : "mode: wait") + "</button>" +
-    '<button class="btn small ghost" data-act="t" data-cmd="stop" aria-label="end attempt"' + (p.finished ? " disabled" : "") + ">" + icon("stop") + "</button>" +
+    '<button class="btn small ghost" data-act="t" data-cmd="stop" aria-label="end attempt"' + (over ? " disabled" : "") + ">" + icon("stop") + "</button>" +
     "</div></div>";
 }
 
@@ -290,13 +304,122 @@ function renderSession() {
     "</div></div>";
 }
 
+// one segmented control bound to a setting; numbers and booleans keep their type
+function seg(k, opts) {
+  const st = S.settings;
+  return '<div class="seg">' + opts.map(([v, label, dis]) =>
+    '<button class="' + (String(st[k]) === String(v) ? "on" : "") + '" data-act="set" data-k="' + k +
+    '" data-v="' + v + '"' + (typeof v === "number" ? " data-num" : "") +
+    (typeof v === "boolean" ? " data-bool" : "") + (dis ? " disabled" : "") + ">" + label + "</button>").join("") + "</div>";
+}
+
+// ---- free play
+
+function renderFree() {
+  const st = S.settings, f = S.freeplay;
+  let banner = "";
+  if (S.bar === "practice" && S.practice) {
+    banner = '<div class="card banner"><span>&ldquo;' + esc(S.practice.title) +
+      "&rdquo; is open &mdash; the bar is following the score.</span>" +
+      '<button class="btn small" data-act="freeplay">End it and play free</button></div>';
+  }
+  const held = f.held.length
+    ? f.held.slice(0, 10).map((n) => '<div class="chip fp">' + esc(n) + "</div>").join("")
+    : '<div class="fp-idle">Play anything &mdash; the bar follows.</div>';
+  const recent = f.recent.length ? "recent&nbsp; " + f.recent.slice().reverse().map(esc).join(" ") : "&nbsp;";
+  const split = st.fp_style === "split";
+  const which = split && fpSide === "R" ? "fp_color2" : "fp_color";
+  const sws = FP_COLORS.map((c) =>
+    '<button class="fsw' + (st[which] === c ? " on" : "") + '" style="background:' + c +
+    '" data-act="fpcolor" data-k="' + which + '" data-v="' + c + '" aria-label="colour ' + c + '"></button>').join("");
+  const side = (v, label, k) => '<button class="' + (fpSide === v ? "on" : "") + '" data-act="fpside" data-v="' + v +
+    '"><i style="background:' + st[k] + '"></i>' + label + "</button>";
+  let colourRow;
+  if (st.fp_style === "rainbow" || st.fp_style === "velocity") {
+    const what = st.fp_style === "rainbow" ? "the hue walks the keyboard, A0 red to C8 violet"
+      : "soft = dim teal &middot; hard = bright red";
+    colourRow = '<div class="srow"><div class="k">Colour<small>set by the style</small></div>' +
+      '<div class="ramp ' + st.fp_style + '"><span>' + what + "</span></div></div>";
+  } else {
+    colourRow = '<div class="srow"><div class="k">Colour<small>' + (split ? "for the side picked below" : "every key") +
+      '</small></div><div class="fsws">' + sws + "</div></div>";
+  }
+  const splitRow = split
+    ? '<div class="srow"><div class="k">Split<small>this key and above is the right side</small></div>' +
+      '<div style="display:flex;gap:14px;align-items:center"><div class="seg side">' +
+      side("L", "left", "fp_color") + side("R", "right", "fp_color2") + '</div><div style="flex:1"></div>' +
+      '<div class="tempo"><button class="btn small" data-act="set" data-k="fp_split" data-num data-v="' + (st.fp_split - 1) + '"' +
+      (st.fp_split <= 22 ? " disabled" : "") + ">&minus;</button>" +
+      '<div class="val">' + noteName(st.fp_split) + "</div>" +
+      '<button class="btn small" data-act="set" data-k="fp_split" data-num data-v="' + (st.fp_split + 1) + '"' +
+      (st.fp_split >= 108 ? " disabled" : "") + ">+</button></div></div></div>"
+    : "";
+  // while a score owns the bar, the banner replaces the now-card: nothing would light
+  const now = banner || '<div class="card fpnow"><div class="label"><span>FREE PLAY &mdash; the bar lights what you play' +
+    '</span><span class="pill' + (f.pedal ? " live" : " off") + '">pedal</span></div>' +
+    '<div class="chips">' + held + '</div><div class="next">' + recent + "</div></div>";
+  return '<div class="body" style="grid-template-rows:auto minmax(0,1fr);height:424px">' + now +
+    '<div class="card rows fprows" style="min-height:0">' +
+    '<div class="srow"><div class="k">Style</div>' +
+    seg("fp_style", [["solid", "Solid"], ["split", "Split"], ["rainbow", "Rainbow"], ["velocity", "Velocity"]]) + "</div>" +
+    colourRow + splitRow +
+    '<div class="srow"><div class="k">Release<small>fade time &middot; sustain pedal</small></div>' +
+    '<div style="display:flex;gap:14px;align-items:center">' +
+    seg("fp_fade_ms", [[0, "off"], [250, "0.25 s"], [600, "0.6 s"], [1500, "1.5 s"]]) +
+    '<div style="flex:1"></div>' + seg("fp_sustain", [[true, "pedal holds"], [false, "no pedal"]]) +
+    "</div></div>" +
+    "</div></div>";
+}
+
+// ---- calibrate
+
+function renderCalibrate() {
+  const c = S.calibration;
+  if (!c) return '<div class="body empty" style="height:424px"><div class="big-msg">Calibration is closed</div></div>';
+  const off = c.offset;
+  const where = off === 0 ? "on the generated map"
+    : (off > 0 ? "+" : "&minus;") + Math.abs(off) + " LED" + (Math.abs(off) === 1 ? "" : "s") +
+      " &middot; " + Math.abs(c.offset_mm) + " mm " + (off > 0 ? "right" : "left");
+  const moved = Object.keys(c.offsets).length;
+  const visited = new Set(c.visited);
+  let cells = "";
+  for (let p = 21; p <= 108; p++) {
+    const cls = ["kc", isBlack(p) ? "b" : "w", p === c.selected ? "sel" : "",
+                 c.offsets[p] ? "moved" : "", visited.has(p) ? "seen" : ""].join(" ");
+    cells += '<button class="' + cls + '" data-act="cal" data-cmd="select" data-arg="' + p + '" aria-label="' + noteName(p) + '"></button>';
+  }
+  const armed = calCloseArmed > Date.now();
+  return '<div class="body" style="grid-template-rows:auto auto auto 1fr;height:424px">' +
+    '<div class="card calmain">' +
+    '<div class="calnote"><div class="k">KEY</div><div class="big">' + esc(c.note) + "</div>" +
+    '<div class="info">MIDI ' + c.selected + " &middot; LEDs " + c.leds[0] + "&ndash;" + c.leds[1] + "</div>" +
+    '<div class="caloff' + (off ? " moved" : "") + '">' + where + "</div></div>" +
+    '<div class="calbtns">' +
+    '<button class="btn" data-act="cal" data-cmd="step" data-arg="-1"' + (c.selected <= 21 ? " disabled" : "") + ">&#9664; key</button>" +
+    '<button class="btn primary" data-act="cal" data-cmd="nudge" data-arg="-1">&larr; light</button>' +
+    '<button class="btn primary" data-act="cal" data-cmd="nudge" data-arg="1">light &rarr;</button>' +
+    '<button class="btn" data-act="cal" data-cmd="step" data-arg="1"' + (c.selected >= 108 ? " disabled" : "") + ">key &#9654;</button>" +
+    '<button class="btn small ghost reset" data-act="cal" data-cmd="reset_key"' + (off ? "" : " disabled") + ">reset this key</button>" +
+    "</div></div>" +
+    '<div class="hint">Press a piano key to pick it. Move the <b>white</b> pair until it sits centred behind the key &mdash; ' +
+    '<span style="color:#d08a3a">amber</span> marks the key to its left, <span style="color:#3fc2a6">teal</span> the key to its right.</div>' +
+    '<div class="card kbmap"><div class="kcs">' + cells + "</div>" +
+    '<div class="info">checked <b>' + visited.size + "</b> / 88 &middot; <b>" + moved + "</b> " + (moved === 1 ? "key" : "keys") + " moved" +
+    (c.dirty ? ' &middot; <span style="color:var(--warn)">unsaved</span>' : " &middot; saved") + "</div></div>" +
+    '<div style="display:flex;gap:10px;align-items:end">' +
+    '<button class="btn small ghost" data-act="cal" data-cmd="shift_all" data-arg="-1">&larr; all</button>' +
+    '<button class="btn small ghost" data-act="cal" data-cmd="shift_all" data-arg="1">all &rarr;</button>' +
+    '<button class="btn small ghost" data-act="cal" data-cmd="reset_all"' + (moved ? "" : " disabled") + ">reset all</button>" +
+    '<div style="flex:1"></div>' +
+    '<button class="btn ghost' + (armed ? " pending" : "") + '" data-act="calclose">' + (armed ? "Discard changes?" : "Close") + "</button>" +
+    '<button class="btn primary" style="min-width:170px" data-act="cal" data-cmd="save"' + (c.dirty ? "" : " disabled") + ">Save as default</button>" +
+    "</div></div>";
+}
+
 // ---- settings
 
 function renderSettings() {
   const st = S.settings;
-  const seg = (k, opts) => '<div class="seg">' + opts.map(([v, label, dis]) =>
-    '<button class="' + (String(st[k]) === String(v) ? "on" : "") + '" data-act="set" data-k="' + k +
-    '" data-v="' + v + '"' + (dis ? " disabled" : "") + ">" + label + "</button>").join("") + "</div>";
   const sw = Object.entries(S.palettes).map(([name, cols]) =>
     '<button class="sw' + (st.palette === name ? " on" : "") + '" data-act="set" data-k="palette" data-v="' + name +
     '" aria-label="' + name + ' palette">' + cols.map((c) => '<i style="background:' + c + '"></i>').join("") + "</button>").join("");
@@ -314,6 +437,10 @@ function renderSettings() {
     seg("lookahead", [[0, "off"], [1, "1"], [2, "2"], [3, "3"]]) + "</div>" +
     '<div class="srow"><div class="k">Input<small>the mic is a backup for no-MIDI instruments (D-29)</small></div>' +
     seg("input", [["midi", "USB-MIDI"], ["mic", "Microphone", midiLive]]) + "</div>" +
+    '<div class="srow"><div class="k">Key calibration<small>move each key\'s light left or right</small></div>' +
+    '<div style="display:flex;align-items:center;gap:14px"><span class="info"><b>' + S.led_offsets.count +
+    "</b> " + (S.led_offsets.count === 1 ? "key" : "keys") + ' corrected</span><div style="flex:1"></div>' +
+    '<button class="btn small" data-act="calstart">Calibrate keys&hellip;</button></div></div>' +
     '<div class="srow"><div class="k">LED bar<small>wire order and timing live in settings.json</small></div>' +
     '<div class="info"><b>' + S.led.count + "</b> LEDs &middot; " + esc(S.led.sink) + " &middot; order <b>" + esc(st.led_order) +
     "</b> &middot; 1-bit <b>" + esc(st.led_one_pattern) + "</b><br>MIDI: " + esc(S.inputs.midi.detail || S.inputs.midi.state) +
@@ -340,8 +467,28 @@ document.addEventListener("click", async (e) => {
     }
     case "t": return api("transport", { cmd: d.cmd, arg: d.arg === undefined ? null : Number(d.arg) });
     case "set": {
-      const v = d.k === "lookahead" ? Number(d.v) : d.v;
+      const v = d.num !== undefined ? Number(d.v) : d.bool !== undefined ? d.v === "true" : d.v;
       return api("settings", { [d.k]: v });
+    }
+    case "fpcolor": return api("settings", { [d.k]: d.v });
+    case "fpside": fpSide = d.v; return render();
+    case "freeplay": return api("freeplay");
+    case "calstart": {
+      const ok = await api("calibrate", { cmd: "start" });
+      if (ok) go("calibrate");
+      return;
+    }
+    case "cal": return api("calibrate", { cmd: d.cmd, arg: d.arg === undefined ? null : Number(d.arg) });
+    case "calclose": {
+      if (S.calibration && S.calibration.dirty && calCloseArmed < Date.now()) {
+        calCloseArmed = Date.now() + 3000;
+        setTimeout(render, 3100);
+        return render();
+      }
+      calCloseArmed = 0;
+      const ok = await api("calibrate", { cmd: "close" });
+      if (ok) go("settings");
+      return;
     }
     case "retry": {
       const ok = await api("retry", { tempo_delta: Number(d.tempo || 0) });
@@ -382,6 +529,9 @@ function accept(state) {
   }
   if (S === null && state.practice && !state.practice.finished && !location.hash) screen = "play";
   if (state.error && (!S || S.error !== state.error)) toast(state.error);
+  // the calibration screen owns the bar while it is open: nowhere else to be
+  if (state.calibration && screen !== "calibrate") screen = "calibrate";
+  else if (!state.calibration && screen === "calibrate") screen = "settings";
   S = state;
   render();
 }

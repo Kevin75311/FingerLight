@@ -111,6 +111,7 @@ window.addEventListener("keydown", (e) => {
   if (e.repeat) return;
   const k = e.key.toLowerCase();
   if (k === " ") { e.preventDefault(); post("autoplay"); return; }
+  if (k === "shift") { post("pedal", { down: true }); return; }
   if (k === "z" || k === "x") {
     octave = Math.min(7, Math.max(1, octave + (k === "x" ? 1 : -1)));
     document.getElementById("oct").textContent = "C" + octave;
@@ -123,6 +124,7 @@ window.addEventListener("keydown", (e) => {
 });
 window.addEventListener("keyup", (e) => {
   const k = e.key.toLowerCase();
+  if (k === "shift") { post("pedal", { down: false }); return; }
   if (down[k] !== undefined) { noteOff(down[k]); delete down[k]; }
 });
 

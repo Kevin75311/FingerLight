@@ -17,7 +17,11 @@ GET  /api/geometry      key and LED positions in mm, for the preview's bar
 POST /api/open          {"id", "hands"?}             start an attempt
 POST /api/transport     {"cmd", "arg"?}              play/pause/toggle/prev/next/loop/loop_spot/tempo/stop
 POST /api/retry         {"tempo_delta"?, "loop"?}    try again
-POST /api/note          {"pitch", "on"}              on-screen keys
+POST /api/note          {"pitch", "on", "velocity"?} on-screen keys
+POST /api/pedal         {"down"}                     sustain pedal (preview)
+POST /api/freeplay      {}                           end the open attempt; the bar plays free
+POST /api/calibrate     {"cmd", "arg"?}              start/select/step/nudge/shift_all/
+                                                     reset_key/reset_all/save/close
 POST /api/autoplay      {}                           play the current event correctly
 POST /api/settings      {key: value, ...}
 POST /api/rescan        {}                           re-read the scores folders
@@ -162,7 +166,16 @@ class Handler(BaseHTTPRequestHandler):
                 pitch = int(body["pitch"])
                 if not 21 <= pitch <= 108:
                     raise ValueError("pitch %d is outside the 88 keys (21..108)" % pitch)
-                eng.note(pitch, bool(body.get("on", True)), "keys")
+                vel = int(body.get("velocity") or 100)
+                if not 1 <= vel <= 127:
+                    raise ValueError("velocity %d is outside 1..127" % vel)
+                eng.note(pitch, bool(body.get("on", True)), "keys", vel)
+            elif path == "/api/pedal":
+                eng.pedal(bool(body["down"]))
+            elif path == "/api/freeplay":
+                eng.end_attempt()
+            elif path == "/api/calibrate":
+                eng.calibrate(str(body["cmd"]), body.get("arg"))
             elif path == "/api/autoplay":
                 eng.autoplay()
             elif path == "/api/settings":

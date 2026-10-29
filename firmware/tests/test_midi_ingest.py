@@ -152,3 +152,17 @@ def test_pick_input_port_skips_the_alsa_loopback():
     assert pick_input_port(names) == names[1]
     assert pick_input_port(names[:1]) is None
     assert pick_input_port([]) is None
+
+
+def test_pedal_events_pass_through_ingest_without_touching_held_notes():
+    from fingerlight.midi import PedalEvent
+
+    usb = ReplayBackend(name="usb", chunks=[note_on(60) + bytes([0xB0, 64, 127])])
+    ingest = MidiIngest([usb], MidiDecoder(pedal=True))
+    events = ingest.poll()
+    assert [type(e).__name__ for e in events] == ["NoteEvent", "PedalEvent"]
+    assert ingest._tracker.held == frozenset({60})
+    usb.disconnect()
+    released = ingest.poll()
+    assert [(e.pitch, e.on) for e in released] == [(60, False)]
+    assert not any(isinstance(e, PedalEvent) for e in released)

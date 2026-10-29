@@ -232,7 +232,7 @@ def test_player_ahead_of_the_clock_is_not_held_back(eng, clock):
 # ------------------------------------------------------------------- outputs
 
 
-def test_leds_follow_the_cursor_and_stay_on_the_strip(eng):
+def test_leds_follow_the_cursor_and_stay_on_the_strip(eng, clock):
     sink = eng.led_sink
     eng.open(SCALE)
     px, _ = sink.frames[-1]
@@ -240,6 +240,9 @@ def test_leds_follow_the_cursor_and_stay_on_the_strip(eng):
     assert lo in px and hi in px
     for _ in range(8):
         play_event(eng)
+    assert eng.bar_owner() == "free"
+    clock.t += 1.0                          # the last key's free-play fade runs out
+    eng.tick()
     assert sink.frames[-1][0] == {}, "a finished attempt must blank the bar"
     for frame, _ in sink.frames:
         assert all(0 <= i < eng.strip.led_count for i in frame)
@@ -330,6 +333,12 @@ def test_server_serves_app_and_drives_an_attempt(server):
     ("/api/settings", [1]),
     ("/api/transport", {"cmd": "tempo", "arg": "fast"}),
     ("/api/settings", {"lookahead": None}),
+    ("/api/settings", {"fp_color": "red"}),
+    ("/api/settings", {"fp_style": "strobe"}),
+    ("/api/note", {"pitch": 60, "on": True, "velocity": 200}),
+    ("/api/calibrate", {"cmd": "nudge", "arg": 1}),       # not open
+    ("/api/calibrate", {"arg": 1}),
+    ("/api/pedal", {}),
 ])
 def test_server_rejects_bad_bodies_with_400(server, path, body):
     """Found by the verifier: [1] crashed the handler with no response at all."""
@@ -356,3 +365,187 @@ def test_skipped_events_are_reported_not_hidden(eng):
     s = eng.summary
     assert (s["credited"], s["skipped"]) == (7, 1)
     assert [p["event"] for p in s["problems"] if p["kind"] == "skipped"] == [1]
+
+
+# ------------------------------------------------------------------ free play
+
+
+def test_free_play_owns_the_bar_when_no_attempt_is_live(eng, clock):
+    sink = eng.led_sink
+    assert eng.bar_owner() == "free"
+    eng.set_setting("fp_color", "#102030")
+    eng.note(60, True, velocity=90)
+    lo, hi = note_to_leds(60, eng.strip)
+    assert sink.frames[-1][0] == {lo: (16, 32, 48), hi: (16, 32, 48)}
+    st = eng.state()
+    assert st["bar"] == "free" and st["freeplay"]["held"] == ["C4"]
+    eng.note(60, False)
+    clock.t += 0.2                          # half of the default 400 ms fade
+    eng.tick()
+    assert sink.frames[-1][0][lo] == (4, 8, 12)
+    v = eng.version
+    clock.t += 0.3
+    eng.tick()
+    assert sink.frames[-1][0] == {} and eng.version == v + 1, "dark: one state push"
+    eng.tick()
+    assert eng.version == v + 1, "nothing lit: ticks are free"
+
+
+def test_fade_steps_drive_the_leds_without_flooding_the_screens(eng, clock):
+    eng.note(60, True)
+    eng.note(60, False)
+    v, n = eng.version, len(eng.led_sink.frames)
+    for _ in range(5):
+        clock.t += 0.04
+        eng.tick()
+    assert eng.version == v and len(eng.led_sink.frames) == n + 5
+
+
+def test_pedal_holds_free_play_lights(eng, clock):
+    eng.pedal(True)
+    eng.note(64, True)
+    eng.note(64, False)
+    clock.t += 5.0
+    eng.tick()
+    assert eng.led_sink.frames[-1][0], "held by the pedal"
+    assert eng.state()["freeplay"]["pedal"] is True
+    eng.pedal(False)
+    clock.t += 1.0
+    eng.tick()
+    assert eng.led_sink.frames[-1][0] == {}
+
+
+def test_a_live_attempt_takes_the_bar_and_free_play_gets_it_back(eng):
+    eng.open(SCALE)
+    assert eng.bar_owner() == "practice"
+    eng.end_attempt()
+    assert eng.bar_owner() == "free"
+    assert eng.summary["stopped"] is True
+
+
+def test_a_stopped_attempt_stays_stopped(eng):
+    """Before: a key after Stop un-paused a summarised attempt in wait mode."""
+    eng.open(SCALE)
+    play_event(eng)
+    eng.transport("stop")
+    summary = eng.summary
+    eng.note(62, True)                      # the next scale note
+    eng.note(62, False)
+    assert eng.attempt.session.index == 1 and eng.summary is summary
+    with pytest.raises(LightScoreError):
+        eng.transport("stop")               # a second stop would write a second row
+    assert len(eng.history[SCALE]) == 1
+    assert eng.state()["practice"]["ended"] is True
+
+
+def test_free_play_settings_validate_and_persist(eng, tmp_path, clock):
+    eng.set_setting("fp_style", "split")
+    eng.set_setting("fp_color2", "#ABCDEF")
+    eng.set_setting("fp_split", 500)
+    eng.set_setting("fp_sustain", "false")
+    assert eng.settings["fp_color2"] == "#abcdef"
+    assert eng.settings["fp_split"] == 108
+    assert eng.settings["fp_sustain"] is False
+    for k, v in (("fp_style", "strobe"), ("fp_color", "#12345"), ("fp_sustain", "maybe")):
+        with pytest.raises(ValueError):
+            eng.set_setting(k, v)
+    again = E.Engine(str(tmp_path), [], clock=clock)
+    assert again.settings["fp_style"] == "split" and again._look.color2 == (171, 205, 239)
+
+
+# ---------------------------------------------------------------- calibration
+
+
+def test_calibrate_select_by_key_nudge_save_and_reload(eng, tmp_path, clock):
+    base = note_to_leds(64, eng.strip)
+    eng.calibrate("start")
+    assert eng.bar_owner() == "calibrate"
+    eng.note(64, True)                      # pressing a key picks it, nothing else
+    eng.note(64, False)
+    c = eng.state()["calibration"]
+    assert c["selected"] == 64 and c["note"] == "E4" and 64 in c["visited"]
+    eng.calibrate("nudge", 1)
+    eng.calibrate("nudge", 1)
+    c = eng.state()["calibration"]
+    assert c["offset"] == 2 and c["offset_mm"] == 13.9 and c["dirty"]
+    px = eng.led_sink.frames[-1][0]
+    assert px[base[0] + 2] == E.CAL_SELECTED and px[base[1] + 2] == E.CAL_SELECTED
+    eng.calibrate("save")
+    assert not eng.state()["calibration"]["dirty"]
+    saved = json.loads((tmp_path / "led_offsets.json").read_text(encoding="utf-8"))
+    assert saved["format"] == E.OFFSETS_FORMAT and saved["offsets"] == {"64": 2}
+    eng.calibrate("close")
+    assert eng.bar_owner() == "free"
+    assert note_to_leds(64, eng.strip) == (base[0] + 2, base[1] + 2)
+    again = E.Engine(str(tmp_path), [], clock=clock)      # the saved map is the default
+    assert note_to_leds(64, again.strip) == (base[0] + 2, base[1] + 2)
+    assert again.state()["led_offsets"]["count"] == 1
+
+
+def test_close_without_save_drops_the_draft(eng):
+    base = note_to_leds(60, eng.strip)
+    eng.calibrate("start", 60)
+    eng.calibrate("nudge", -1)
+    assert note_to_leds(60, eng.strip)[0] == base[0] - 1
+    eng.calibrate("close")
+    assert note_to_leds(60, eng.strip) == base
+    assert eng.offsets == {}
+
+
+def test_shift_all_reset_and_limits(eng):
+    eng.calibrate("start", 60)
+    eng.calibrate("shift_all", 1)
+    assert len(eng.calib.draft) == 88
+    eng.calibrate("reset_key")
+    assert 60 not in eng.calib.draft and len(eng.calib.draft) == 87
+    eng.calibrate("reset_all")
+    assert eng.calib.draft == {}
+    for _ in range(E.CAL_MAX):
+        eng.calibrate("nudge", 1)
+    with pytest.raises(ValueError):
+        eng.calibrate("nudge", 1)
+    with pytest.raises(ValueError):
+        eng.calibrate("nudge", 3)
+    eng.calibrate("select", 108)
+    with pytest.raises(ValueError, match="leave the strip"):
+        for _ in range(E.CAL_MAX):
+            eng.calibrate("nudge", 1)
+    with pytest.raises(ValueError):
+        eng.calibrate("bogus")
+
+
+def test_calibration_pauses_a_running_attempt_and_shows_its_new_map(eng):
+    eng.open(SCALE)
+    play_event(eng)
+    assert eng.attempt.running
+    eng.calibrate("start", 62)
+    assert not eng.attempt.running
+    eng.note(64, True)                      # selects, does not play the score
+    assert eng.attempt.session.index == 1
+    eng.calibrate("nudge", 1)
+    eng.calibrate("save")
+    eng.calibrate("close")
+    assert eng.bar_owner() == "practice"
+    assert eng.attempt.session.settings.offset_for(64) == 1
+
+
+def test_bad_offsets_file_is_ignored(tmp_path, clock):
+    (tmp_path / "led_offsets.json").write_text(json.dumps({
+        "format": E.OFFSETS_FORMAT,
+        "offsets": {"60": 1, "61": 99, "7": 1, "x": 2, "62": "bad"}}), encoding="utf-8")
+    e = E.Engine(str(tmp_path), [], clock=clock)
+    assert e.offsets == {60: 1}
+
+
+def test_server_free_play_and_calibration_round_trip(server):
+    assert _post(server, "/api/pedal", {"down": True})[0] == 200
+    assert _post(server, "/api/note", {"pitch": 60, "on": True, "velocity": 30})[0] == 200
+    assert _post(server, "/api/open", {"id": SCALE})[0] == 200
+    assert _post(server, "/api/freeplay", {})[0] == 200
+    assert _post(server, "/api/calibrate", {"cmd": "start"})[0] == 200
+    assert _post(server, "/api/calibrate", {"cmd": "nudge", "arg": 1})[0] == 200
+    with urllib.request.urlopen(server + "/api/state", timeout=5) as r:
+        st = json.loads(r.read())
+    assert st["bar"] == "calibrate" and st["calibration"]["offset"] == 1
+    assert st["freeplay"]["pedal"] is True and st["summary"]["stopped"] is True
+    assert _post(server, "/api/calibrate", {"cmd": "close"})[0] == 200
