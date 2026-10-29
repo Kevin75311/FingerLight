@@ -69,7 +69,7 @@ Four things that came out of this and are worth knowing:
    so the bar is anchored on the board's front rim (`BAR_FROM_RIM_MM = 0`), not
    on the key tails — as far toward the player as the board allows. Laid flat
    there the LED tops are at z 100.10 mm, 0.67 mm *below* the black-key tops:
-   option A in [[hardware]], "LEDs graze keys, black keys cast shadows". The
+   option A in [hardware](../docs/hardware.md), "LEDs graze keys, black keys cast shadows". The
    10–15 mm clearance the hardware note prefers needs the printed wedge
    (option B).
 3. **The strip is centred, and the map was regenerated to match** (2026-09-21).
@@ -212,7 +212,7 @@ field still undulates -- literally "can I see the dots".
 
 So the bar cannot be made narrower by lowering the cap; below ~7 mm it stops
 being a stripe and becomes dots. That is the same conclusion as the 6-10 mm
-recommendation in [[hardware]], arrived at from the geometry.
+recommendation in [hardware](../docs/hardware.md), arrived at from the geometry.
 
 **Measured** (`python sim/lightfield.py`), at gap 7 mm:
 

@@ -15,7 +15,7 @@ from a phone on the same network.
 machine: `python app/server.py --preview` on a PC, then http://127.0.0.1:8080/preview —
 §7. Renders of the live app are `app/shots/shot_*.png`. The original static mockups
 (`app/ui/`, `app/ui/shot_*.png`) are kept as the design record; the live app follows them
-except where §8 says otherwise. Installing it on the Pi: [[pi-setup]].
+except where §8 says otherwise. Installing it on the Pi: [pi-setup](pi-setup.md).
 
 ## 1. The rule the design follows
 
@@ -216,7 +216,7 @@ upstream's `get_note_position` — which stays verbatim, so `verify_against_map`
 checks the generated map, not the hand corrections. A key may move at most 12 LEDs, and its
 own LED may not leave the strip. If many keys need the same growing correction toward one
 end, that is a scale error: re-measure the octave span and re-run `tools/gen_map.py`
-rather than nudging 40 keys ([[firmware]], `calibration.py`).
+rather than nudging 40 keys ([firmware](firmware.md), `calibration.py`).
 
 While Calibrate is open, every screen redirects to it and the tabs are disabled — the
 bar cannot be half in calibration. A running attempt is paused on entry.
@@ -229,6 +229,6 @@ the calibration colours. Not verified: any of it on the Pi.
 
 ## See also
 
-[[index]] · [[pi-setup]] · [[decisions]] D-30, Q-07 · [[firmware]] for the state machine the app drives ·
-[[hardware]] §6 for the panel and the Pi · [[simulation]] for what the bar itself does ·
-[[log]] 2026-09-22.
+[index](index.md) · [pi-setup](pi-setup.md) · [decisions](decisions.md) D-30, Q-07 · [firmware](firmware.md) for the state machine the app drives ·
+[hardware](hardware.md) §6 for the panel and the Pi · [simulation](simulation.md) for what the bar itself does ·
+[log](../log.md) 2026-09-22.

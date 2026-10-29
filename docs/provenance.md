@@ -49,8 +49,8 @@ Two earlier decisions cited the wrong licence as part of their reasoning:
 - **D-01** listed "wanting a non-GPL product" as a condition that would reverse a choice.
   Moot: the product was never GPL-encumbered.
 
-Both corrections, and the seven-place doc sweep, are logged in [[log]] under
-2026-09-16. See [[decisions]] for D-01 and D-23 in full.
+Both corrections, and the seven-place doc sweep, are logged in [log](../log.md) under
+2026-09-16. See [decisions](decisions.md) for D-01 and D-23 in full.
 
 ## Bucket 1 — from Piano-LED-Visualizer (upstream, MIT)
 
@@ -279,5 +279,5 @@ piano path (`pipeline.py:96,130,182`); `assign_frets()` is a true global DP and 
 from noahbaculi/guitar-tab-generator (stated in the survey and in `tab.py` comments); and
 chord detection is guitar-only (`pipeline.py:146`).
 
-See [[index]] for the project map, [[decisions]] for D-01/D-08/D-12/D-15/D-23 in full,
-and [[log]] for the 2026-09-16 licence-correction entry.
+See [index](index.md) for the project map, [decisions](decisions.md) for D-01/D-08/D-12/D-15/D-23 in full,
+and [log](../log.md) for the 2026-09-16 licence-correction entry.

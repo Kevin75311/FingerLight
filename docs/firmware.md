@@ -37,7 +37,7 @@ web UI and main loop on a real Zero 2 W.
 | `notemap.py` | MIDI note → LED pair, and the proof the fix is a settings change (D-08) | done |
 | `colors.py` | hand + finger → RGB for the 2-LED pair (D-12, D-13, D-17) | done, palette undecided |
 
-> **A diffuser changes both of those rows.** With the bar reading as a continuous stripe, [[simulation]] prototypes `note → [(led, weight)]` instead of a fixed pair, which cuts the apparent-centre error from 6.85 mm to 0.68 mm — but it cannot be expressed in upstream's settings and it breaks the two-pixel hand/finger split. Open as Q-10 and Q-11 in [[decisions]]; nothing in `firmware/` has changed for it.
+> **A diffuser changes both of those rows.** With the bar reading as a continuous stripe, [simulation](simulation.md) prototypes `note → [(led, weight)]` instead of a fixed pair, which cuts the apparent-centre error from 6.85 mm to 0.68 mm — but it cannot be expressed in upstream's settings and it breaks the two-pixel hand/finger split. Open as Q-10 and Q-11 in [decisions](decisions.md); nothing in `firmware/` has changed for it.
 | `lightscore.py` | reader for the Part 3 light-score contract | done |
 | `practice.py` | wait-for-it practice state machine | done |
 | `calibration.py` | 3-anchor map calibration (D-18) | done |
@@ -275,6 +275,6 @@ manufacture from a PC.
 - **The B2 palette choice** — a taste call for Kevin, decided by eye on the built bar,
   not in code.
 
-See [[hardware]] for the build side, [[score]] for the Part 3 contract this consumes,
-[[decisions]] for D-06/D-08/D-12/D-13/D-16/D-17/D-18, and [[log]] for session history.
-[[index]] · [[provenance]]
+See [hardware](hardware.md) for the build side, [score](score.md) for the Part 3 contract this consumes,
+[decisions](decisions.md) for D-06/D-08/D-12/D-13/D-16/D-17/D-18, and [log](../log.md) for session history.
+[index](index.md) · [provenance](provenance.md)

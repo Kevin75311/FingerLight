@@ -17,11 +17,11 @@ pinned clone's `LICENSE` at `b502ad67` reads `MIT License, Copyright (c) 2022 on
 unauthenticated `GET https://api.github.com/repos/onlaj/Piano-LED-Visualizer` returns
 `license.spdx_id == "MIT"`. This voids one reversal condition on **D-01** and one rationale
 clause on **D-23** (both marked below). Neither decision changes — D-23 stands on its other
-grounds. The error is kept visible here rather than silently removed; see [[log]]
+grounds. The error is kept visible here rather than silently removed; see [log](../log.md)
 2026-09-16 for the full trail.
 
 **M1 is measured, not assumed: 164.8 mm** (was an assumed 164.1 mm industry-standard figure).
-The map and settings were regenerated at the measured value; see D-08 below and [[log]]
+The map and settings were regenerated at the measured value; see D-08 below and [log](../log.md)
 2026-09-15 ("M1 landed").
 
 ## Decisions
@@ -51,7 +51,7 @@ The map and settings were regenerated at the measured value; see D-08 below and 
 | # | Decision | Why | Who | What would reverse it |
 |---|---|---|---|---|
 | D-06 | Note sensing: USB MIDI + BLE MIDI + audio fallback | BLE for convenience (WU-BT10 already owned), audio so it also works on an acoustic | [USER] | — |
-| D-08 | Analytic `shift`/`note_offsets` instead of hand-nudged | Reduces worst-case centring error from 8.89 mm to 3.42 mm (the LED-pitch quantisation floor). *(Figures were first computed at the assumed M1 = 164.1 mm; regenerated at the measured M1 = 164.8 mm, and again on 2026-09-21 for a centred tape (D-25): worst error 3.45 mm, `shift = -2`, `note_offsets = [[21,-1],[51,1],[96,1],[107,-1]]` — [[hardware]] §2.1a.)* Proven empirically by B1: all 88 notes reproduce `data/led_map.csv`, 0 mismatches | [DESIGN] | Nothing — it is strictly better and costs three settings values |
+| D-08 | Analytic `shift`/`note_offsets` instead of hand-nudged | Reduces worst-case centring error from 8.89 mm to 3.42 mm (the LED-pitch quantisation floor). *(Figures were first computed at the assumed M1 = 164.1 mm; regenerated at the measured M1 = 164.8 mm, and again on 2026-09-21 for a centred tape (D-25): worst error 3.45 mm, `shift = -2`, `note_offsets = [[21,-1],[51,1],[96,1],[107,-1]]` — [hardware](hardware.md) §2.1a.)* Proven empirically by B1: all 88 notes reproduce `data/led_map.csv`, 0 mismatches | [DESIGN] | Nothing — it is strictly better and costs three settings values |
 | D-12 | 2-LED encoding: left pixel = hand, right pixel = finger hue | 10 classes (5 fingers × 2 hands) are not distinguishable as 10 hues in peripheral vision; each key owns ~2 LEDs, so split the roles | [DESIGN] | A custom PCB with 3+ LEDs/key allows richer encoding |
 | D-13 | No pure blue in the finger palette | Dimmest channel per unit drive, and it dies on a matte black keytop | [DESIGN] | — |
 | D-16 | Audio path is score-informed verification, not transcription | The expected pitches at each moment are already known, so it is a small tuned filterbank against ≤10 candidates, not blind polyphonic transcription | [DESIGN] | Wanting free-play transcription with no score loaded |
@@ -66,8 +66,8 @@ The map and settings were regenerated at the measured value; see D-08 below and 
 | D-05 | Fingering auto-generated algorithmically | Fingering annotations are absent from almost all scores | [USER] | — |
 | D-15 | OMR runs offline on the PC, not the Pi | Audiveris is a JVM app wanting 2 GB+ heap; Zero 2 W has 512 MB. Score compilation is not realtime — the split costs nothing | [DESIGN] | Moving to a Pi 4/5 with ≥4 GB |
 | D-21 | Vendor ScoreForge's piano path into `scoreforge/` unmodified; guitar + bulk to an archive zip | Keeps provenance readable and the package importable, without forking code before Part 3 is designed | [DESIGN] | Deciding to hard-fork into a clean piano-only package once the Part 3 design settles |
-| D-22 | Piano fingering = port ScoreForge's DP, adding finger identity to the state | Answers Q-04 with working, tested code rather than a new algorithm; the guitar DP is the same shortest-path formulation Sayegh (1989) established for fingering generally. Delivered as A1; a left-hand mirroring bug was found post-delivery and fixed (see [[log]] 2026-09-15) | [DESIGN] | The ported DP producing unplayable fingering on real scores → try minimax Viterbi (Hori & Sagayama) or a learned model |
-| D-23 | Score compiler stays a separate PC-side process, talking to the Pi by data file **— reversal condition now reachable: an 8 GB Pi 5 can host a JVM. Not acted on; see [[hardware]] §6.3** | D-15 already put OMR offline, and the compiler needs a JVM plus 2 GB+ of heap the Pi does not have. *(A second reason recorded here — keeping GPL-3.0 firmware inheritance off the compiler — is **void**: upstream is MIT, corrected 2026-09-16. The decision stands on the reason above.)* | [DESIGN] | A Pi capable of running Audiveris (2 GB+ heap), which would remove the reason to split them. *(The originally recorded reversal — "folding the compiler in would make it a derivative work" — was a GPL concern and is void under MIT.)* |
+| D-22 | Piano fingering = port ScoreForge's DP, adding finger identity to the state | Answers Q-04 with working, tested code rather than a new algorithm; the guitar DP is the same shortest-path formulation Sayegh (1989) established for fingering generally. Delivered as A1; a left-hand mirroring bug was found post-delivery and fixed (see [log](../log.md) 2026-09-15) | [DESIGN] | The ported DP producing unplayable fingering on real scores → try minimax Viterbi (Hori & Sagayama) or a learned model |
+| D-23 | Score compiler stays a separate PC-side process, talking to the Pi by data file **— reversal condition now reachable: an 8 GB Pi 5 can host a JVM. Not acted on; see [hardware](hardware.md) §6.3** | D-15 already put OMR offline, and the compiler needs a JVM plus 2 GB+ of heap the Pi does not have. *(A second reason recorded here — keeping GPL-3.0 firmware inheritance off the compiler — is **void**: upstream is MIT, corrected 2026-09-16. The decision stands on the reason above.)* | [DESIGN] | A Pi capable of running Audiveris (2 GB+ heap), which would remove the reason to split them. *(The originally recorded reversal — "folding the compiler in would make it a derivative work" — was a GPL concern and is void under MIT.)* |
 | D-24 | Accept audio → score as a fourth input alongside MIDI/MusicXML/PDF | ScoreForge already implements it end to end; it costs nothing to keep and covers "I can play it but have no score" | [DESIGN] | — |
 | D-25 | Tape centred on the playing width, not at the min-error origin | `gen_map.py`'s error-minimising origin sat 7.75 mm left of A0 and left 9.76 mm bare at the top — visibly off-centre on the instrument. Centring costs **0.05 mm** of worst-case centring error (3.40 → 3.45 mm) and keeps 88/88 unique LEDs. Decided by Kevin 2026-09-21 | [DESIGN] | A measurement showing the residual matters more than the symmetry |
 | D-27 | **Platform: Raspberry Pi 5 + 5" DSI touchscreen (800×480) + USB microphone**, replacing the Zero 2 W, the SPI LCD HAT and the OTG hub | Kevin's call, 2026-09-22. Removes both Zero 2 W compute limits, gives four USB ports (piano + mic, no hub) and a real control surface. Costs: the LED driver must change (D-28), the Pi needs its own 5 V/5 A PD supply, and the build goes from ≈125–155 to ≈195–255 USD | [USER] | — |
@@ -78,23 +78,23 @@ The map and settings were regenerated at the measured value; see D-08 below and 
 
 ## Open questions
 
-Status as of 2026-09-16, re-derived from [[log]] and the implementation plan — not copied
+Status as of 2026-09-16, re-derived from [log](../log.md) and the implementation plan — not copied
 from the old decision log, which was stale on five of these.
 
 | # | Question | Status | Where answered |
 |---|---|---|---|
-| Q-01 | Octave span M1 on the actual instrument | **CLOSED** — measured M1 = 164.8 mm; map and settings regenerated, worst error 3.4 mm | [[log]] 2026-09-15 ("M1 landed") |
-| Q-02 | Panel geometry M3–M6 | **CLOSED on reduced scope** — Kevin owns the mechanical build and delivers a CAD file; the only mechanical parameter software tracks is M1 | [[log]] 2026-09-15 ("status audit"); [[hardware]] |
-| Q-03 | What is in ScoreForge | **CLOSED** — digested and vendored | [[log]] 2026-09-15 |
-| Q-04 | Fingering algorithm family | **CLOSED** — DP, per D-22. Weights and the finger-identity cost still need tuning against real scores | D-22; [[score]] |
-| Q-05 | Light-score file format and push mechanism to the Pi | **CLOSED** — JSON schema `lightscore-v1.schema.json`, built as A0 | [[log]] 2026-09-15; [[score]] |
-| Q-06 | How far ahead to preview upcoming notes, and how to show it without confusing "now" | **OPEN** — B3 (practice state machine) leaves preview depth as a bare parameter; the UX question itself is undecided | [[firmware]] |
-| Q-07 | Whether the web UI or the LCD menu is the primary control surface for practice | **CLOSED** — D-30: a web app in kiosk Chromium on the 5" DSI panel, the same app reachable from a phone. The LCD menu is not carried over | D-27, D-30; [[hardware]] §6 |
-| Q-08 | OMR: Audiveris vs. alternatives, MusicXML → note-model ingest | **CLOSED for implementation, UNVERIFIED end-to-end** — A4 (`omr.py`) implements the Audiveris subprocess wrapper and, more importantly, the post-OMR staff-splitting cleanup proven load-bearing (6 notes/0-on-staff-2 without it vs. 9 notes/3-on-staff-2 with it). The subprocess call itself has never run against a real JVM/Audiveris install on this machine, so treat the choice as made and the ingest path as built, but not hardware-proven | A4; [[log]] 2026-09-16; [[score]] |
-| Q-09 | Hand assignment: inside the fingering DP, or a separate pass before it? | **CLOSED** — separate pass, A2 (`hands.py`), three modes (`staff`/`pitch`/`auto`), `auto` is default | [[log]] 2026-09-16; [[score]] |
-| Q-10 | Does the note→LED map become `note → [(led, weight)]`? | **OPEN** — prototyped in [[simulation]]: a weighted profile cuts the apparent-centre error from 6.85 mm to 0.68 mm and crosstalk from 16% to 1% at identical optics. But upstream's `shift`/`note_offsets` formula maps one note to one LED and **cannot express weights**, so adopting it means the overlay becomes a PLV-compatibility fallback rather than the source of truth (D-08 territory) | [[simulation]]; [[log]] 2026-09-21 |
-| Q-11 | How are hand and finger encoded once a key is one soft blob? | **OPEN** — D-12's two-pixel split (hand pixel + finger pixel) cannot survive a diffused blob. Options not yet compared: colour = finger with hand as a dim leading edge; hand = blob colour with a brighter finger core; or keep two-pixel mode as a toggle. A taste call, and it blocks Q-10 | [[simulation]]; D-12, D-13 |
-| Q-12 | What blur does the diffuser Kevin bought actually produce? | **OPEN** — the sim assumes `σ = 0.45 × gap`, which puts the continuity threshold at a 7 mm gap. One photograph of a single lit key through the real profile is enough to fit the coefficient, after which the gap and the band width can be re-chosen | [[simulation]]; [[hardware]] §5 |
+| Q-01 | Octave span M1 on the actual instrument | **CLOSED** — measured M1 = 164.8 mm; map and settings regenerated, worst error 3.4 mm | [log](../log.md) 2026-09-15 ("M1 landed") |
+| Q-02 | Panel geometry M3–M6 | **CLOSED on reduced scope** — Kevin owns the mechanical build and delivers a CAD file; the only mechanical parameter software tracks is M1 | [log](../log.md) 2026-09-15 ("status audit"); [hardware](hardware.md) |
+| Q-03 | What is in ScoreForge | **CLOSED** — digested and vendored | [log](../log.md) 2026-09-15 |
+| Q-04 | Fingering algorithm family | **CLOSED** — DP, per D-22. Weights and the finger-identity cost still need tuning against real scores | D-22; [score](score.md) |
+| Q-05 | Light-score file format and push mechanism to the Pi | **CLOSED** — JSON schema `lightscore-v1.schema.json`, built as A0 | [log](../log.md) 2026-09-15; [score](score.md) |
+| Q-06 | How far ahead to preview upcoming notes, and how to show it without confusing "now" | **OPEN** — B3 (practice state machine) leaves preview depth as a bare parameter; the UX question itself is undecided | [firmware](firmware.md) |
+| Q-07 | Whether the web UI or the LCD menu is the primary control surface for practice | **CLOSED** — D-30: a web app in kiosk Chromium on the 5" DSI panel, the same app reachable from a phone. The LCD menu is not carried over | D-27, D-30; [hardware](hardware.md) §6 |
+| Q-08 | OMR: Audiveris vs. alternatives, MusicXML → note-model ingest | **CLOSED for implementation, UNVERIFIED end-to-end** — A4 (`omr.py`) implements the Audiveris subprocess wrapper and, more importantly, the post-OMR staff-splitting cleanup proven load-bearing (6 notes/0-on-staff-2 without it vs. 9 notes/3-on-staff-2 with it). The subprocess call itself has never run against a real JVM/Audiveris install on this machine, so treat the choice as made and the ingest path as built, but not hardware-proven | A4; [log](../log.md) 2026-09-16; [score](score.md) |
+| Q-09 | Hand assignment: inside the fingering DP, or a separate pass before it? | **CLOSED** — separate pass, A2 (`hands.py`), three modes (`staff`/`pitch`/`auto`), `auto` is default | [log](../log.md) 2026-09-16; [score](score.md) |
+| Q-10 | Does the note→LED map become `note → [(led, weight)]`? | **OPEN** — prototyped in [simulation](simulation.md): a weighted profile cuts the apparent-centre error from 6.85 mm to 0.68 mm and crosstalk from 16% to 1% at identical optics. But upstream's `shift`/`note_offsets` formula maps one note to one LED and **cannot express weights**, so adopting it means the overlay becomes a PLV-compatibility fallback rather than the source of truth (D-08 territory) | [simulation](simulation.md); [log](../log.md) 2026-09-21 |
+| Q-11 | How are hand and finger encoded once a key is one soft blob? | **OPEN** — D-12's two-pixel split (hand pixel + finger pixel) cannot survive a diffused blob. Options not yet compared: colour = finger with hand as a dim leading edge; hand = blob colour with a brighter finger core; or keep two-pixel mode as a toggle. A taste call, and it blocks Q-10 | [simulation](simulation.md); D-12, D-13 |
+| Q-12 | What blur does the diffuser Kevin bought actually produce? | **OPEN** — the sim assumes `σ = 0.45 × gap`, which puts the continuity threshold at a 7 mm gap. One photograph of a single lit key through the real profile is enough to fit the coefficient, after which the gap and the band width can be re-chosen | [simulation](simulation.md); [hardware](hardware.md) §5 |
 
 Reasoning on the one judgement call (Q-08): "closed" here means the *decision and the code*
 exist — Audiveris was never seriously contested against an alternative, and the ingest path
@@ -106,5 +106,5 @@ CLOSED with no caveat would overstate confidence in an untested subprocess bound
 
 ## See also
 
-[[index]] · [[log]] for the session-by-session trail behind every closure above · [[hardware]]
-· [[firmware]] · [[score]] · [[provenance]] for what was vendored from where.
+[index](index.md) · [log](../log.md) for the session-by-session trail behind every closure above · [hardware](hardware.md)
+· [firmware](firmware.md) · [score](score.md) · [provenance](provenance.md) for what was vendored from where.

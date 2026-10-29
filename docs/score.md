@@ -295,4 +295,4 @@ Known open item: the cost model (`COST_WEIGHTS`) has only ever been exercised ag
 scales and chord fixtures — **never a real piece**. Tuning against real repertoire is
 unstarted.
 
-See [[index]], [[log]], [[decisions]], [[hardware]], [[firmware]], [[provenance]].
+See [index](index.md), [log](../log.md), [decisions](decisions.md), [hardware](hardware.md), [firmware](firmware.md), [provenance](provenance.md).

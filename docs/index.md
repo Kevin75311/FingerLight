@@ -10,35 +10,35 @@ tags: [index]
 
 Eight notes. Each answers one question. Start with whichever question you have.
 
-> **Building the hardware today? → [[build]].** Order of operations, the test after each
-> step, and what each one proves. **Setting up the Pi and its touchscreen → [[pi-setup]]**:
+> **Building the hardware today? → [build](build.md).** Order of operations, the test after each
+> step, and what each one proves. **Setting up the Pi and its touchscreen → [pi-setup](pi-setup.md)**:
 > flashing the card, the panel, and the app as a full-screen kiosk.
 
 | Note | Answers |
 |---|---|
-| [[hardware]] | How big is everything, what do I buy, and where does it go? Key geometry, M1, LED choice, the capacitive touch panel problem, power, wiring, BOM. |
-| [[firmware]] | What runs on the Pi? Note→LED map, finger colours, practice state machine, calibration, MIDI ingest, audio verification and its benchmark. |
-| [[score]] | How does sheet music become light? Light-score format, fingering DP, hand assignment, MusicXML ingest, OMR. |
-| [[simulation]] | What does it look like before it exists? The MuJoCo scene built from the CAD, driven by the firmware; the key action, the diffuser model, and what the sim has already caught. |
-| [[app]] | What does the player touch? The 800×480 touchscreen app: the four screens, why they are shaped that way, how they are wired to the firmware, and how to preview them on a PC. |
-| [[decisions]] | Why is it like this, and what would change it? D-01…D-26 and the open questions. |
-| [[provenance]] | What is borrowed and what is ours? Piano-LED-Visualizer vs. ScoreForge vs. new, with evidence. |
-| [[log]] | What happened, in order? Append-only, one entry per session, newest at the bottom. |
+| [hardware](hardware.md) | How big is everything, what do I buy, and where does it go? Key geometry, M1, LED choice, the capacitive touch panel problem, power, wiring, BOM. |
+| [firmware](firmware.md) | What runs on the Pi? Note→LED map, finger colours, practice state machine, calibration, MIDI ingest, audio verification and its benchmark. |
+| [score](score.md) | How does sheet music become light? Light-score format, fingering DP, hand assignment, MusicXML ingest, OMR. |
+| [simulation](simulation.md) | What does it look like before it exists? The MuJoCo scene built from the CAD, driven by the firmware; the key action, the diffuser model, and what the sim has already caught. |
+| [app](app.md) | What does the player touch? The 800×480 touchscreen app: the four screens, why they are shaped that way, how they are wired to the firmware, and how to preview them on a PC. |
+| [decisions](decisions.md) | Why is it like this, and what would change it? D-01…D-26 and the open questions. |
+| [provenance](provenance.md) | What is borrowed and what is ours? Piano-LED-Visualizer vs. ScoreForge vs. new, with evidence. |
+| [log](../log.md) | What happened, in order? Append-only, one entry per session, newest at the bottom. |
 
 Project overview, current state and the quick-reference table live in the repo
-[[README]]. Test-fixture provenance is in [[score/tests/fixtures/README|the fixtures
-README]]. Part 4's runnable detail — flags, file layout, regeneration — is in
-[[sim/README|the sim README]]; [[simulation]] is its note in this vault.
+[README](../README.md). Test-fixture provenance is in [the fixtures
+README](../score/tests/fixtures/README.md). Part 4's runnable detail — flags, file layout, regeneration — is in
+[the sim README](../sim/README.md); [simulation](simulation.md) is its note in this vault.
 
 ## Reference archive
 
 Three surveys carried over from ScoreForge. They are **research notes, not decisions** —
-the decisions they fed are in [[decisions]]. Left as written; not maintained.
+the decisions they fed are in [decisions](decisions.md). Left as written; not maintained.
 
-- [[fingering-survey]] — prior art on automatic fingering. §1 surveys the finger-identity
+- [fingering-survey](research/fingering-survey.md) — prior art on automatic fingering. §1 surveys the finger-identity
   cost model that was rejected *for guitar* and adopted here.
-- [[model-survey]] — audio-transcription models, with installability verdicts.
-- [[deployment-gui-survey]] — deployment and GUI options.
+- [model-survey](research/model-survey.md) — audio-transcription models, with installability verdicts.
+- [deployment-gui-survey](research/deployment-gui-survey.md) — deployment and GUI options.
 
 ## Conventions
 
@@ -46,12 +46,12 @@ the decisions they fed are in [[decisions]]. Left as written; not maintained.
   every note is reachable from this page. Run it after editing docs.
 - **Claims are marked.** VERIFIED means someone ran the check that would have failed if it
   were wrong. ASSUMED and UNVERIFIED mean nobody has. Do not upgrade one without evidence.
-- **[[log]] is append-only.** Corrections go in a new entry saying what they correct —
+- **[log](../log.md) is append-only.** Corrections go in a new entry saying what they correct —
   never by rewriting an old one.
 - **Fix the source, not the artifact.** Values in `data/` are generated by
   `tools/gen_map.py`. Change the input and re-run; never hand-edit the output.
 
-*This vault was consolidated from 26 notes to 6 on 2026-09-16, and [[simulation]] was added on 2026-09-21. Old note names —
+*This vault was consolidated from 26 notes to 6 on 2026-09-16, and [simulation](simulation.md) was added on 2026-09-21. Old note names —
 `[[01-mechanical-and-hardware-survey]]`, `[[HANDOFF]]`, `[[03-decision-log]]` and the rest
 — still resolve: each is an alias on the note that absorbed it, so historical links in
-[[log]] keep working without rewriting history.*
+[log](../log.md) keep working without rewriting history.*

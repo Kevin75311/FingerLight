@@ -14,22 +14,22 @@ one is the assumption the next one rests on.
 
 > **176 LEDs.** WS2812B/SK6812 at 144 LED/m, cut to **176**, spanning **1222.22 mm**.
 > Buy ≥ 1.3 m and cut at the marks. The tape starts **1.003 mm right of A0's left edge**
-> (centred: 1.0 mm of margin at each end) — [[hardware]] §2.1a.
+> (centred: 1.0 mm of margin at each end) — [hardware](hardware.md) §2.1a.
 >
 > Data on **SPI0 MOSI = GPIO10, physical pin 19** — *not* GPIO18 — because `rpi_ws281x`
-> cannot drive a Pi 5 ([[decisions]] D-28).
+> cannot drive a Pi 5 ([decisions](decisions.md) D-28).
 
 ## The route
 
 | If you want… | Go to |
 |---|---|
-| geometry, pins, power, BOM | [[hardware]] |
-| why anything is the way it is | [[decisions]] |
-| what the Pi will eventually run | [[firmware]] |
-| what the bar should look like lit | [[simulation]] |
-| the touchscreen app | [[app]] |
-| flashing the Pi, the panel, the kiosk | [[pi-setup]] |
-| what happened, session by session | [[log]] |
+| geometry, pins, power, BOM | [hardware](hardware.md) |
+| why anything is the way it is | [decisions](decisions.md) |
+| what the Pi will eventually run | [firmware](firmware.md) |
+| what the bar should look like lit | [simulation](simulation.md) |
+| the touchscreen app | [app](app.md) |
+| flashing the Pi, the panel, the kiosk | [pi-setup](pi-setup.md) |
+| what happened, session by session | [log](../log.md) |
 
 ## The short route: one smoke run
 
@@ -45,9 +45,9 @@ sudo systemctl start fingerlight
 It asks yes/no after each strip pattern, then lights every key you play through the real
 map until all 88 have been heard. **Pass:** every step PASS — no dead key, no stuck key, no
 out-of-range note. It also reports the velocity range, whether the sustain pedal arrived,
-and the Pi-side note → LED time. Paste its closing block into [[log]]; the full result is
+and the Pi-side note → LED time. Paste its closing block into [log](../log.md); the full result is
 in `~/.fingerlight/smoke-report.json`. Then fix any off-centre keys on the touchscreen:
-Settings → *Calibrate keys…* ([[app]] §9).
+Settings → *Calibrate keys…* ([app](app.md) §9).
 
 The numbered sections below are the same ground one step at a time, for when the smoke
 run fails and you need to know where.
@@ -66,7 +66,7 @@ Two things to confirm while the parts are still returnable:
 
 ## 1. Pi setup — no wires yet
 
-Flashing the card and bringing up the touchscreen come first: [[pi-setup]] §1–§5. This
+Flashing the card and bringing up the touchscreen come first: [pi-setup](pi-setup.md) §1–§5. This
 step is its §5.
 
 ```
@@ -135,27 +135,27 @@ python3 tools/hw/led_test.py sweep --ms 40
 **Pass:** each lit pair sits over its own key, and the sweep tracks the key centres from
 A0 to C8 without drifting. The design's worst-case centring error is **3.45 mm**, about
 15 % of a white key — drift that grows toward one end is an alignment or an M1 problem,
-not quantisation. [[hardware]] §2.1a, §4.3.
+not quantisation. [hardware](hardware.md) §2.1a, §4.3.
 
 Keys that are off by a constant LED or two are fixed on the touchscreen, per key, and
-saved as the default: Settings → *Calibrate keys…* ([[app]] §9).
+saved as the default: Settings → *Calibrate keys…* ([app](app.md) §9).
 
 ## 5. Once it works
 
 - Photograph **one lit key through the diffuser**, straight on, with a ruler in frame.
-  That is the measurement that closes [[decisions]] Q-12 and lets the simulation's σ stop
+  That is the measurement that closes [decisions](decisions.md) Q-12 and lets the simulation's σ stop
   being an assumption.
 - Note the actual current at 25 % and 100 % white — the BOM's 8 A sizing is calculated,
   not measured.
-- Write down anything that surprised you in [[log]], same day.
+- Write down anything that surprised you in [log](../log.md), same day.
 
 ## What is known to be unverified
 
 `rpi_ws281x` failing on a Pi 5, and the SPI path working there, are both **reported and
-not measured on this board** ([[hardware]] §6.1a). If SPI disappoints after stage 3, the
+not measured on this board** ([hardware](hardware.md) §6.1a). If SPI disappoints after stage 3, the
 fallback order is RP1 PIO (`piolib`), then an external Pico. The encoder itself is
 checked (`--selftest`), which narrows a failure to wiring, timing or the library beneath.
 
 ## See also
 
-[[index]] · [[hardware]] · [[decisions]] · [[firmware]] · [[simulation]] · [[app]] · [[log]]
+[index](index.md) · [hardware](hardware.md) · [decisions](decisions.md) · [firmware](firmware.md) · [simulation](simulation.md) · [app](app.md) · [log](../log.md)

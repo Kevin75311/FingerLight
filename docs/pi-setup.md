@@ -9,7 +9,7 @@ tags: [build, app, part5]
 # Pi setup — flash, screen, app
 
 From a blank microSD card to the app full screen on the touchscreen. About an hour, most
-of it waiting on downloads. Do this **before** wiring the strip — it is [[build]] step 1,
+of it waiting on downloads. Do this **before** wiring the strip — it is [build](build.md) step 1,
 written out — and do every step in order, because each one checks the one before it.
 
 > **Facts in this note were checked against primary sources on 2026-09-30** (Raspberry Pi
@@ -23,15 +23,15 @@ written out — and do every step in order, because each one checks the one befo
 |---|---|
 | Raspberry Pi 5 | 4 GB is plenty; 8 GB only matters for D-23's reversal (Audiveris on the Pi) |
 | microSD | 32 GB or more, A2-rated |
-| Power | the official **27 W USB-C** supply (5.1 V 5 A). The Pi gets its own supply; the strip never powers it ([[hardware]] §6) |
+| Power | the official **27 W USB-C** supply (5.1 V 5 A). The Pi gets its own supply; the strip never powers it ([hardware](hardware.md) §6) |
 | Touchscreen | one of the two below, **with the cable for a Pi 5** |
-| A PC | to run Raspberry Pi Imager, and to compile scores ([[score]]) |
+| A PC | to run Raspberry Pi Imager, and to compile scores ([score](score.md)) |
 | USB keyboard | optional, but makes §2 painless if Wi-Fi does not come up |
 
 ### Which panel do you have?
 
 The app is laid out at **800×480** and scales itself to any screen, so both work — but they
-are set up differently, and the BOM line ([[hardware]] §7, row 9) does not name a model.
+are set up differently, and the BOM line ([hardware](hardware.md) §7, row 9) does not name a model.
 
 | | Waveshare-class **5" DSI LCD, 800×480** | Official **Raspberry Pi Touch Display 2, 5"** |
 |---|---|---|
@@ -274,8 +274,8 @@ the same firmware state machine as the Pi; only MIDI, mic and SPI are switched o
   panels' setup, Imager's customisation tab, the blanking command.
 - **Not verified at all:** anything that needs the Pi in hand — the service under systemd,
   the labwc autostart, Chromium kiosk on the panel, MIDI from the PX-S1100, the mic path,
-  SPI to the strip. Write down what differs in [[log]].
+  SPI to the strip. Write down what differs in [log](../log.md).
 
 ## See also
 
-[[build]] · [[app]] · [[hardware]] §6 · [[firmware]] · [[score]] · [[decisions]] D-27, D-28, D-30
+[build](build.md) · [app](app.md) · [hardware](hardware.md) §6 · [firmware](firmware.md) · [score](score.md) · [decisions](decisions.md) D-27, D-28, D-30
