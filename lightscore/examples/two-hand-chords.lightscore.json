@@ -1,0 +1,38 @@
+{
+  "format": "lightscore",
+  "version": 1,
+  "meta": {
+    "title": "Two-hand block chords -- C, F, G7, C",
+    "source": "musicxml",
+    "generator": "hand-written fixture",
+    "fingering": "manual",
+    "note": "Exercises the cases the scale fixture cannot: simultaneous notes (same t), both hands at once, a 4-note chord, and the LH fingering convention where 5 is the lowest note. Half notes at 120 bpm = 1000 ms. Every LH note has a matching RH note at the same onset, so a firmware bug that shows only one hand is visible immediately."
+  },
+  "tempo": [{ "t": 0, "bpm": 120 }],
+  "notes": [
+    { "t":    0, "d": 1000, "p": 48, "h": "L", "f": 5, "stf": 2 },
+    { "t":    0, "d": 1000, "p": 55, "h": "L", "f": 1, "stf": 2 },
+    { "t":    0, "d": 1000, "p": 60, "h": "R", "f": 1, "stf": 1 },
+    { "t":    0, "d": 1000, "p": 64, "h": "R", "f": 3, "stf": 1 },
+    { "t":    0, "d": 1000, "p": 67, "h": "R", "f": 5, "stf": 1 },
+
+    { "t": 1000, "d": 1000, "p": 41, "h": "L", "f": 5, "stf": 2 },
+    { "t": 1000, "d": 1000, "p": 53, "h": "L", "f": 1, "stf": 2 },
+    { "t": 1000, "d": 1000, "p": 60, "h": "R", "f": 1, "stf": 1 },
+    { "t": 1000, "d": 1000, "p": 65, "h": "R", "f": 2, "stf": 1 },
+    { "t": 1000, "d": 1000, "p": 69, "h": "R", "f": 4, "stf": 1 },
+
+    { "t": 2000, "d": 1000, "p": 43, "h": "L", "f": 5, "stf": 2 },
+    { "t": 2000, "d": 1000, "p": 55, "h": "L", "f": 1, "stf": 2 },
+    { "t": 2000, "d": 1000, "p": 59, "h": "R", "f": 1, "stf": 1 },
+    { "t": 2000, "d": 1000, "p": 62, "h": "R", "f": 2, "stf": 1 },
+    { "t": 2000, "d": 1000, "p": 65, "h": "R", "f": 3, "stf": 1 },
+    { "t": 2000, "d": 1000, "p": 67, "h": "R", "f": 5, "stf": 1 },
+
+    { "t": 3000, "d": 1000, "p": 48, "h": "L", "f": 5, "stf": 2 },
+    { "t": 3000, "d": 1000, "p": 55, "h": "L", "f": 1, "stf": 2 },
+    { "t": 3000, "d": 1000, "p": 60, "h": "R", "f": 1, "stf": 1 },
+    { "t": 3000, "d": 1000, "p": 64, "h": "R", "f": 3, "stf": 1 },
+    { "t": 3000, "d": 1000, "p": 72, "h": "R", "f": 5, "stf": 1 }
+  ]
+}

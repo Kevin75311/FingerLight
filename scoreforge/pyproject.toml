@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scoreforge"
+version = "0.2.0"
+description = "ScoreForge: turn any song into guitar TABs (.gp5) or piano sheet music (Demucs + Basic Pitch / bytedance piano model + DP fret assignment + PyGuitarPro), with a local web GUI"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "pretty_midi",
+    "PyGuitarPro",
+    # setuptools>=81 dropped pkg_resources, which resampy (a transitive basic-pitch
+    # dependency) still imports at runtime. Pin until that's fixed upstream.
+    "setuptools<81",
+    # Chord recognition (optional stage). See README's "Chord detection setup" for a
+    # required one-time manual fix this wheel's own packaging needs.
+    "madmom-prebuilt",
+    # Local web GUI (scoreforge.webui / `python -m scoreforge`).
+    "fastapi",
+    "uvicorn",
+    "python-multipart",
+]
+
+[project.optional-dependencies]
+# Piano-specialized transcription (bytedance high-resolution model, MIT). Soft
+# dependency: piano mode falls back to Basic Pitch without it.
+piano = ["piano-transcription-inference"]
+
+[tool.setuptools.package-data]
+scoreforge = ["static/*"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

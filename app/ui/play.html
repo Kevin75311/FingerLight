@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=800, height=480, initial-scale=1">
+<title>Finger_Light — Play</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="screen">
+
+  <div class="top">
+    <div>
+      <div class="title">Gymnop&eacute;die No.1</div>
+    </div>
+    <div class="sub">bar 12 / 39</div>
+    <div class="spacer"></div>
+    <div class="pill live">USB-MIDI</div>
+    <div class="pill off">mic idle</div>
+  </div>
+
+  <div style="display:grid; grid-template-rows: 1fr auto; min-height:0;">
+    <div class="body cue">
+
+      <div class="card now">
+        <div class="label">PLAY NOW &mdash; right hand</div>
+        <div class="chips" style="align-self:center">
+          <div class="chip f1">D4<span class="fng">THUMB</span></div>
+          <div class="chip f3 waiting">A4<span class="fng">MIDDLE</span></div>
+          <div class="chip f5 waiting">F5<span class="fng">LITTLE</span></div>
+        </div>
+        <div class="next">
+          next
+          <span class="mini" style="background:var(--f2)">G4</span>
+          <span class="mini" style="background:var(--f4)">C5</span>
+          <span style="margin-left:10px">then</span>
+          <span class="mini" style="background:var(--f1);opacity:.55">D4</span>
+        </div>
+      </div>
+
+      <div class="card meter">
+        <div class="row"><span class="k">this attempt</span><span class="v">94<small style="font-size:14px">%</small></span></div>
+        <div class="bar"><i style="width:94%"></i></div>
+        <div class="row"><span class="k">progress</span><span class="v small">12 / 39 bars</span></div>
+        <div class="bar"><i style="width:31%"></i></div>
+        <div class="row"><span class="k">loop</span><span class="v small">bars 9&ndash;16</span></div>
+        <div class="row"><span class="k">missed so far</span><span class="v small" style="color:var(--warn)">3</span></div>
+      </div>
+
+    </div>
+
+    <div class="transport">
+      <button class="btn small ghost">&#9635;<span>loop</span></button>
+      <button class="btn">&#9198;</button>
+      <button class="btn primary play" style="min-width:104px"><span class="glyph">&#9208;</span></button>
+      <button class="btn">&#9197;</button>
+      <div class="grow"></div>
+      <div class="tempo">
+        <button class="btn small">&minus;</button>
+        <div class="val">80<span style="font-size:13px;color:var(--dim)">%</span></div>
+        <button class="btn small">+</button>
+      </div>
+      <button class="btn small ghost" style="margin-left:6px">wait mode</button>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

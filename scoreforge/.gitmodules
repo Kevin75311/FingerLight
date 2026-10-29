@@ -1,0 +1,9 @@
+[submodule "external/demucs"]
+	path = external/demucs
+	url = https://github.com/facebookresearch/demucs
+[submodule "external/basic-pitch"]
+	path = external/basic-pitch
+	url = https://github.com/spotify/basic-pitch
+[submodule "external/midi-to-guitar-tab"]
+	path = external/midi-to-guitar-tab
+	url = https://github.com/V2arK/midi-to-guitar-tab

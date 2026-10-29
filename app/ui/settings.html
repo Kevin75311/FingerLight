@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=800, height=480, initial-scale=1">
+<title>Finger_Light — Settings</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="screen">
+  <div class="top">
+    <div class="tabs">
+      <button class="tab">Library</button>
+      <button class="tab">Play</button>
+      <button class="tab">Session</button>
+      <button class="tab on">Settings</button>
+    </div>
+    <div class="spacer"></div>
+    <div class="pill live">USB-MIDI</div>
+  </div>
+
+  <div class="body">
+    <div class="card rows">
+      <div class="srow">
+        <div class="k">Practice mode<small>what the bar does when you are late</small></div>
+        <div class="seg">
+          <button class="on">Wait for me</button>
+          <button>Play along</button>
+        </div>
+      </div>
+      <div class="srow">
+        <div class="k">Finger palette<small>undecided until the bar is built (B2)</small></div>
+        <div class="swatches">
+          <div class="sw on"><i style="background:var(--f1)"></i><i style="background:var(--f2)"></i><i style="background:var(--f3)"></i><i style="background:var(--f4)"></i><i style="background:var(--f5)"></i></div>
+          <div class="sw"><i style="background:#ff1e1e"></i><i style="background:#ffaa00"></i><i style="background:#ffffff"></i><i style="background:#00dc3c"></i><i style="background:#ff00c8"></i></div>
+          <div class="sw"><i style="background:#ff001e"></i><i style="background:#a05a28"></i><i style="background:#5a8232"></i><i style="background:#32826e"></i><i style="background:#00ffaa"></i></div>
+        </div>
+      </div>
+      <div class="srow">
+        <div class="k">Brightness<small>global cap &middot; also caps current draw</small></div>
+        <div class="slider"><i style="width:45%"></i><b style="left:45%"></b></div>
+      </div>
+      <div class="srow">
+        <div class="k">Look ahead<small>how many events are dim-lit before now (Q-06)</small></div>
+        <div class="seg">
+          <button>off</button><button class="on">1</button><button>2</button><button>3</button>
+        </div>
+      </div>
+      <div class="srow">
+        <div class="k">Input<small>the mic is a backup for instruments with no MIDI (D-29)</small></div>
+        <div class="seg">
+          <button class="on">USB-MIDI</button>
+          <button disabled>Microphone</button>
+          <button class="ghost">Calibrate bar &#8594;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

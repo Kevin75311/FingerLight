@@ -1,0 +1,274 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="960" viewBox="0 0 1400 960">
+<rect width="1400" height="960" fill="#ffffff"/>
+<text x="40" y="44" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="24" text-anchor="start" font-weight="bold" fill="#222">Finger Light — LED bar wiring</text>
+<text x="40" y="68" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" text-anchor="start" font-weight="normal" fill="#555">Raspberry Pi 5 · HiLetgo TXS0108E level shifter · 176 × WS2812B (144 LED/m) · data on SPI0 MOSI = GPIO10, physical pin 19 (D-28)</text>
+<rect x="40" y="100" width="250" height="110" rx="8" fill="#fff4f4" stroke="#d6283e" stroke-width="2"/>
+<text x="165" y="135" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="16" text-anchor="middle" font-weight="bold" fill="#222">LED PSU</text>
+<text x="165" y="157" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" text-anchor="middle" font-weight="normal" fill="#222">5 V / 8 A (40 W) brick</text>
+<text x="165" y="177" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#666">strip + TXS VB only</text>
+<text x="48" y="199" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#666">AC mains in →</text>
+<text x="282" y="126" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="end" font-weight="bold" fill="#d6283e">V+</text>
+<text x="282" y="176" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="end" font-weight="bold" fill="#1f1f1f">V−</text>
+<path d="M290,130 L1320,130" fill="none" stroke="#d6283e" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M290,180 L1345,180" fill="none" stroke="#1f1f1f" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="760" y="121" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#d6283e">+5 V bus · 18 AWG</text>
+<text x="760" y="171" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#1f1f1f">GND bus · 18 AWG</text>
+<rect x="640" y="250" width="720" height="44" rx="3" fill="#f1f1f1" stroke="#444" stroke-width="2"/>
+<rect x="655.4" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="667.7" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="680.0" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="692.2" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="704.5" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="716.8" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="729.0" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="741.3" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="753.6" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="765.9" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="778.1" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="790.4" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="802.7" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="815.0" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="827.2" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="839.5" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="851.8" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="864.0" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="876.3" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="888.6" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="900.9" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="913.1" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="925.4" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="937.7" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="950.0" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="962.2" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="974.5" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="986.8" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="999.0" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1011.3" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1023.6" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1035.9" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1048.1" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1060.4" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1072.7" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1085.0" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1097.2" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1109.5" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1121.8" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1134.0" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1146.3" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1158.6" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1170.9" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1183.1" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1195.4" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1207.7" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1220.0" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1232.2" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1244.5" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1256.8" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1269.0" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1281.3" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1293.6" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1305.9" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1318.1" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<rect x="1330.4" y="258" width="6" height="6" fill="#fff" stroke="#aaa" stroke-width="1"/>
+<text x="648" y="287" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="bold" fill="#1c6fd6">DIN</text>
+<text x="1352" y="287" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" text-anchor="end" font-weight="normal" fill="#9a9a9a">DO · n/c</text>
+<text x="1000.0" y="316" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" text-anchor="middle" font-weight="bold" fill="#222">WS2812B / SK6812 · 144 LED/m · 176 LEDs · 1222 mm · GRB · LED 0 sits at A0</text>
+<text x="1000.0" y="334" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#666">data flows LED 0 → LED 175 — follow the arrows printed on the tape</text>
+<path d="M655,130 L655,174 A6,6 0 0 1 655,186 L655,250" fill="none" stroke="#d6283e" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M680,180 L680,250" fill="none" stroke="#1f1f1f" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="655" cy="130" r="4.5" fill="#d6283e"/>
+<circle cx="680" cy="180" r="4.5" fill="#1f1f1f"/>
+<text x="690" y="228" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#444">inject #1 · LED 0</text>
+<path d="M990,130 L990,174 A6,6 0 0 1 990,186 L990,250" fill="none" stroke="#d6283e" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1015,180 L1015,250" fill="none" stroke="#1f1f1f" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="990" cy="130" r="4.5" fill="#d6283e"/>
+<circle cx="1015" cy="180" r="4.5" fill="#1f1f1f"/>
+<text x="1025" y="228" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#444">inject #2 · LED 88</text>
+<path d="M1320,130 L1320,174 A6,6 0 0 1 1320,186 L1320,250" fill="none" stroke="#d6283e" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1345,180 L1345,250" fill="none" stroke="#1f1f1f" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="1320" cy="130" r="4.5" fill="#d6283e"/>
+<circle cx="1345" cy="180" r="4.5" fill="#1f1f1f"/>
+<text x="1310" y="228" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="end" font-weight="normal" fill="#444">inject #3 · LED 175</text>
+<path d="M585,130 L585,150" fill="none" stroke="#d6283e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="574" y1="150" x2="596" y2="150" stroke="#333" stroke-width="3"/>
+<path d="M574,162 Q585,154 596,162" fill="none" stroke="#333" stroke-width="3"/>
+<path d="M585,158 L585,180" fill="none" stroke="#1f1f1f" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="585" cy="130" r="4.5" fill="#d6283e"/>
+<circle cx="585" cy="180" r="4.5" fill="#1f1f1f"/>
+<text x="568" y="149" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" text-anchor="middle" font-weight="bold" fill="#222">+</text>
+<text x="585" y="98" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" font-weight="bold" fill="#222">C1 1000 µF ≥10 V</text>
+<text x="585" y="112" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#666">at injection #1</text>
+<rect x="330" y="420" width="200" height="330" rx="8" fill="#eef4ff" stroke="#2b4c8c" stroke-width="2"/>
+<text x="430.0" y="394" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" text-anchor="middle" font-weight="bold" fill="#222">TXS0108E module (HiLetgo)</text>
+<text x="430.0" y="411" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#b0471a">stands in for D-11's 74AHCT125 — see note ③</text>
+<rect x="405" y="535" width="50" height="90" rx="3" fill="#2a2a2a"/>
+<text x="430.0" y="585" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="bold" fill="#fff">TXS</text>
+<text x="342" y="768" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="bold" fill="#e8890c">A side · 3.3 V</text>
+<text x="518" y="768" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" text-anchor="end" font-weight="bold" fill="#d6283e">B side · 5 V</text>
+<rect x="325" y="445" width="10" height="10" fill="#e8890c"/>
+<rect x="525" y="445" width="10" height="10" fill="#d6283e"/>
+<text x="342" y="454" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#222">VA</text>
+<text x="518" y="454" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#222">VB</text>
+<rect x="325" y="475" width="10" height="10" fill="#1c6fd6"/>
+<rect x="525" y="475" width="10" height="10" fill="#1c6fd6"/>
+<text x="342" y="484" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#222">A1</text>
+<text x="518" y="484" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#222">B1</text>
+<rect x="325" y="505" width="10" height="10" fill="#9a9a9a"/>
+<rect x="525" y="505" width="10" height="10" fill="#9a9a9a"/>
+<text x="342" y="514" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#9a9a9a">A2</text>
+<text x="518" y="514" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#9a9a9a">B2</text>
+<rect x="325" y="535" width="10" height="10" fill="#9a9a9a"/>
+<rect x="525" y="535" width="10" height="10" fill="#9a9a9a"/>
+<text x="342" y="544" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#9a9a9a">A3</text>
+<text x="518" y="544" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#9a9a9a">B3</text>
+<rect x="325" y="565" width="10" height="10" fill="#9a9a9a"/>
+<rect x="525" y="565" width="10" height="10" fill="#9a9a9a"/>
+<text x="342" y="574" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#9a9a9a">A4</text>
+<text x="518" y="574" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#9a9a9a">B4</text>
+<rect x="325" y="595" width="10" height="10" fill="#9a9a9a"/>
+<rect x="525" y="595" width="10" height="10" fill="#9a9a9a"/>
+<text x="342" y="604" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#9a9a9a">A5</text>
+<text x="518" y="604" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#9a9a9a">B5</text>
+<rect x="325" y="625" width="10" height="10" fill="#9a9a9a"/>
+<rect x="525" y="625" width="10" height="10" fill="#9a9a9a"/>
+<text x="342" y="634" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#9a9a9a">A6</text>
+<text x="518" y="634" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#9a9a9a">B6</text>
+<rect x="325" y="655" width="10" height="10" fill="#9a9a9a"/>
+<rect x="525" y="655" width="10" height="10" fill="#9a9a9a"/>
+<text x="342" y="664" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#9a9a9a">A7</text>
+<text x="518" y="664" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#9a9a9a">B7</text>
+<rect x="325" y="685" width="10" height="10" fill="#9a9a9a"/>
+<rect x="525" y="685" width="10" height="10" fill="#9a9a9a"/>
+<text x="342" y="694" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#9a9a9a">A8</text>
+<text x="518" y="694" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#9a9a9a">B8</text>
+<rect x="325" y="715" width="10" height="10" fill="#e8890c"/>
+<rect x="525" y="715" width="10" height="10" fill="#1f1f1f"/>
+<text x="342" y="724" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#222">OE</text>
+<text x="518" y="724" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#222">GND</text>
+<text x="430.0" y="650" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#9a9a9a">A2–A8 / B2–B8</text>
+<text x="430.0" y="664" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#9a9a9a">not connected</text>
+<rect x="40" y="420" width="210" height="340" rx="8" fill="#f2fbf4" stroke="#2d7a3e" stroke-width="2"/>
+<text x="145" y="411" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" text-anchor="middle" font-weight="bold" fill="#222">Raspberry Pi 5</text>
+<text x="238" y="454" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#e8890c">pin 1 · 3V3</text>
+<rect x="245" y="445" width="10" height="10" fill="#e8890c"/>
+<text x="238" y="484" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#1c6fd6">pin 19 · GPIO10</text>
+<rect x="245" y="475" width="10" height="10" fill="#1c6fd6"/>
+<text x="238" y="744" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#1f1f1f">pin 6 · GND</text>
+<rect x="245" y="735" width="10" height="10" fill="#1f1f1f"/>
+<text x="238" y="498" font-family="Consolas, Menlo, monospace" font-size="10" text-anchor="end" font-weight="normal" fill="#666">(SPI0 MOSI)</text>
+<text x="55" y="552" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="9" text-anchor="start" font-weight="normal" fill="#666">header map · board edge ↑ (even pins)</text>
+<rect x="55" y="560" width="8" height="8" fill="#f3b9c1" stroke="#888" stroke-width="0.6"/>
+<rect x="55" y="569" width="8" height="8" fill="#e8890c" stroke="#888" stroke-width="0.6"/>
+<rect x="64" y="560" width="8" height="8" fill="#f3b9c1" stroke="#888" stroke-width="0.6"/>
+<rect x="64" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="73" y="560" width="8" height="8" fill="#1f1f1f" stroke="#888" stroke-width="0.6"/>
+<rect x="73" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="82" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="82" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="91" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="91" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="100" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="100" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="109" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="109" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="118" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="118" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="127" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="127" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="136" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="136" y="569" width="8" height="8" fill="#1c6fd6" stroke="#888" stroke-width="0.6"/>
+<rect x="145" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="145" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="154" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="154" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="163" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="163" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="172" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="172" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="181" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="181" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="190" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="190" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="199" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="199" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="208" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="208" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="217" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="217" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="226" y="560" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<rect x="226" y="569" width="8" height="8" fill="#ffffff" stroke="#888" stroke-width="0.6"/>
+<text x="55" y="590" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold" fill="#444">pin 1 = inner row, end away from USB</text>
+<text x="55" y="603" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#444">1 = 3V3 · 6 = GND · 19 = GPIO10</text>
+<text x="55" y="617" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#a33">pink = pins 2/4 (5 V): leave empty,</text>
+<text x="55" y="629" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#a33">never power the strip from the Pi</text>
+<text x="55" y="648" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#666">USB-A: piano (USB-MIDI), USB mic</text>
+<text x="55" y="662" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#666">DSI: 5" touchscreen, 22-pin FPC</text>
+<text x="55" y="676" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#666">SPI0 SCLK (23) / CE0 (24): n/c</text>
+<rect x="40" y="830" width="210" height="70" rx="8" fill="#fff9ec" stroke="#e8890c" stroke-width="2"/>
+<text x="145" y="857" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="14" text-anchor="middle" font-weight="bold" fill="#222">Pi 5 PSU</text>
+<text x="145" y="877" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#222">USB-C PD 5 V / 5 A (27 W)</text>
+<path d="M145,830 L145,760" fill="none" stroke="#555" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="155" y="800" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#555">USB-C · Pi only</text>
+<path d="M250,450 L330,450" fill="none" stroke="#e8890c" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M250,480 L330,480" fill="none" stroke="#1c6fd6" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M330,720 L300,720 L300,486 A6,6 0 0 0 300,474 L300,450" fill="none" stroke="#e8890c" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="300" cy="450" r="4.5" fill="#e8890c"/>
+<text x="296" y="712" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" text-anchor="end" font-weight="bold" fill="#e8890c">OE→VA</text>
+<path d="M530,480 L560,480 L560,272 L568,272" fill="none" stroke="#1c6fd6" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M568,272 L570.8,266 L576.5,278 L582.2,266 L587.8,278 L593.5,266 L599.2,278 L602,272" fill="none" stroke="#1c6fd6" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M602,272 L640,272" fill="none" stroke="#1c6fd6" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="588" y="260" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="bold" fill="#222">R1 330 Ω</text>
+<text x="566" y="400" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#1c6fd6">5 V data</text>
+<text x="566" y="413" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#1c6fd6">keep short</text>
+<path d="M530,450 L545,450 L545,186 A6,6 0 0 0 545,174 L545,130" fill="none" stroke="#d6283e" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="545" cy="130" r="4.5" fill="#d6283e"/>
+<path d="M250,740 L310,740 L310,790 L620,790" fill="none" stroke="#1f1f1f" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M530,720 L620,720" fill="none" stroke="#1f1f1f" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M620,790 L620,278 A6,6 0 0 0 620,266 L620,180" fill="none" stroke="#1f1f1f" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="620" cy="720" r="4.5" fill="#1f1f1f"/>
+<circle cx="620" cy="180" r="4.5" fill="#1f1f1f"/>
+<text x="330" y="808" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="bold" fill="#1f1f1f">single ground tie: Pi ↔ LED PSU (the only one)</text>
+<rect x="690" y="380" width="670" height="560" rx="10" fill="#ffffff" stroke="#ccc" stroke-width="1.5"/>
+<text x="710" y="410" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" text-anchor="start" font-weight="bold" fill="#222">① Connections</text>
+<text x="716" y="431" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#222">Pi pin 1  (3V3)</text>
+<text x="900" y="431" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">TXS VA, and TXS OE (OE low = outputs off)</text>
+<text x="716" y="452" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#222">Pi pin 19 (GPIO10)</text>
+<text x="900" y="452" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">TXS A1</text>
+<text x="716" y="473" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#222">TXS B1</text>
+<text x="900" y="473" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">R1 330 Ω → strip DIN at LED 0</text>
+<text x="716" y="494" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#222">LED PSU +5 V</text>
+<text x="900" y="494" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">TXS VB · strip +5 V at LED 0, 88, 175</text>
+<text x="716" y="515" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#222">LED PSU GND</text>
+<text x="900" y="515" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">strip GND at LED 0, 88, 175</text>
+<text x="716" y="536" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#222">Pi pin 6 + TXS GND</text>
+<text x="900" y="536" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">one wire to the GND bus: the only tie point</text>
+<text x="716" y="557" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#222">C1 1000 µF</text>
+<text x="900" y="557" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">+ to +5 V, − to GND, at injection #1</text>
+<text x="716" y="578" font-family="Consolas, Menlo, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#222">Pi 5 power</text>
+<text x="900" y="578" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">its own USB-C PD 5 V / 5 A, nothing else</text>
+<text x="710" y="612" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" text-anchor="start" font-weight="bold" fill="#a33">② Never</text>
+<text x="716" y="632" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">• power the strip from the Pi's 5 V pins (2 / 4)</text>
+<text x="716" y="652" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">• power the Pi from the LED brick or from the strip's far end</text>
+<text x="716" y="672" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">• tie the Pi's ground to the LED ground at more than one point</text>
+<text x="710" y="706" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" text-anchor="start" font-weight="bold" fill="#b0471a">③ TXS0108E instead of the 74AHCT125 the docs specify (D-11)</text>
+<text x="716" y="726" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">VA is the low side (3.3 V), VB the high side (5 V); VA must not exceed VB.</text>
+<text x="716" y="746" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">OE must be tied to VA, or every output stays high-impedance (nothing lights).</text>
+<text x="716" y="766" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">Outputs are weak, auto-direction one-shots: keep B1 → DIN short and add</text>
+<text x="732" y="786" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">no pull-up / pull-down resistors on A1 or B1.</text>
+<text x="716" y="806" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">If led_test.py 'first' shows garbage or flicker, suspect the TXS first:</text>
+<text x="732" y="826" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">shorten the B1 wire, then fall back to a 74AHCT125 (BOM item 7).</text>
+<text x="716" y="846" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">Clone pinouts vary: check the module's silkscreen against this drawing.</text>
+<text x="710" y="880" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="15" text-anchor="start" font-weight="bold" fill="#222">④ Wire key</text>
+<line x1="716" y1="900" x2="750" y2="900" stroke="#d6283e" stroke-width="4"/>
+<text x="758" y="904" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">+5 V</text>
+<line x1="836" y1="900" x2="870" y2="900" stroke="#1f1f1f" stroke-width="4"/>
+<text x="878" y="904" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">GND</text>
+<line x1="956" y1="900" x2="990" y2="900" stroke="#e8890c" stroke-width="4"/>
+<text x="998" y="904" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">3.3 V</text>
+<line x1="1076" y1="900" x2="1110" y2="900" stroke="#1c6fd6" stroke-width="4"/>
+<text x="1118" y="904" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">data</text>
+<line x1="1196" y1="900" x2="1230" y2="900" stroke="#9a9a9a" stroke-width="4"/>
+<text x="1238" y="904" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#222">n/c</text>
+<text x="716" y="926" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#666">A hop (⌒) is a crossing with no connection; a dot is a junction.</text>
+<text x="40" y="942" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#888">Sources: docs/hardware.md §4.4, §4.5, §6.1a · docs/build.md step 3 · docs/decisions.md D-11, D-20, D-27, D-28</text>
+</svg>

@@ -1,0 +1,22 @@
+{
+  "format": "lightscore",
+  "version": 1,
+  "meta": {
+    "title": "C major scale, one octave, right hand ascending",
+    "source": "midi",
+    "generator": "hand-written fixture",
+    "fingering": "manual",
+    "note": "Ground truth for the fingering DP (A1). The textbook RH ascending fingering is 1-2-3-1-2-3-4-5: the thumb passes under after E4, which is the behaviour that distinguishes a real DP from a naive one-finger-per-note assignment. Quarter notes at 120 bpm = 500 ms each."
+  },
+  "tempo": [{ "t": 0, "bpm": 120 }],
+  "notes": [
+    { "t":    0, "d": 500, "p": 60, "h": "R", "f": 1, "stf": 1 },
+    { "t":  500, "d": 500, "p": 62, "h": "R", "f": 2, "stf": 1 },
+    { "t": 1000, "d": 500, "p": 64, "h": "R", "f": 3, "stf": 1 },
+    { "t": 1500, "d": 500, "p": 65, "h": "R", "f": 1, "stf": 1 },
+    { "t": 2000, "d": 500, "p": 67, "h": "R", "f": 2, "stf": 1 },
+    { "t": 2500, "d": 500, "p": 69, "h": "R", "f": 3, "stf": 1 },
+    { "t": 3000, "d": 500, "p": 71, "h": "R", "f": 4, "stf": 1 },
+    { "t": 3500, "d": 500, "p": 72, "h": "R", "f": 5, "stf": 1 }
+  ]
+}

@@ -1,0 +1,43 @@
+# Secrets / credentials (never commit Wi-Fi, SSH or API credentials)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+wpa_supplicant*.conf
+*.nmconnection
+secrets.*
+
+# Third-party reference clone (has its own git history; see docs/provenance.md)
+external/
+
+# Vendor CAD over GitHub's 100 MB file limit
+hardware/cad/Casio_PX-S1100_detailed.step
+
+# Generated simulation output (regenerate with sim/*.py)
+sim/renders/
+sim/assets/_cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+build/
+dist/
+
+# Obsidian per-user state
+.obsidian/workspace*.json
+Untitled*.base
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=800, height=480, initial-scale=1">
+<title>Finger_Light — Session</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="screen">
+  <div class="top">
+    <div><div class="title">Attempt 4 &mdash; bars 9&ndash;16</div></div>
+    <div class="sub">Gymnopedie No.1 &middot; 80% tempo &middot; wait mode</div>
+    <div class="spacer"></div>
+    <button class="btn small ghost">Done</button>
+  </div>
+
+  <div class="body" style="grid-template-rows: 1fr auto;">
+    <div class="grid2">
+      <div class="card stat">
+        <div>
+          <div class="k" style="color:var(--dim);font-size:13px">NOTES CORRECT</div>
+          <div class="big">94<small>%</small></div>
+        </div>
+        <div class="bar"><i style="width:94%"></i></div>
+        <div class="row" style="display:flex;justify-content:space-between">
+          <span class="k" style="color:var(--dim);font-size:13px">played</span><span class="v small">64 / 68</span>
+        </div>
+        <div class="row" style="display:flex;justify-content:space-between">
+          <span class="k" style="color:var(--dim);font-size:13px">hesitations</span><span class="v small" style="color:var(--warn)">7</span>
+        </div>
+        <div class="row" style="display:flex;justify-content:space-between">
+          <span class="k" style="color:var(--dim);font-size:13px">vs. attempt 3</span><span class="v small" style="color:var(--ok)">+11%</span>
+        </div>
+      </div>
+
+      <div class="card misses">
+        <div style="color:var(--dim);font-size:13px;font-weight:600;letter-spacing:.6px;margin:2px 4px 8px">WHERE IT WENT WRONG</div>
+        <div class="miss"><div class="note" style="color:var(--f3)">A4</div><div class="why">bar 11 &middot; middle finger &middot; 0.9 s late</div><div class="tag late">hesitated</div></div>
+        <div class="miss"><div class="note" style="color:var(--f5)">F5</div><div class="why">bar 11 &middot; little finger &middot; played G5</div><div class="tag wrong">wrong key</div></div>
+        <div class="miss"><div class="note" style="color:var(--f1)">D4</div><div class="why">bar 14 &middot; thumb &middot; 0.6 s late</div><div class="tag late">hesitated</div></div>
+        <div class="miss"><div class="note" style="color:var(--f2)">G4</div><div class="why">bar 15 &middot; index &middot; not played</div><div class="tag wrong">missed</div></div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:10px; align-items:center;">
+      <button class="btn ghost">Slower &minus;10%</button>
+      <button class="btn ghost">Loop bar 11 only</button>
+      <div style="flex:1"></div>
+      <button class="btn primary" style="min-width:190px">Try again &#9205;</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

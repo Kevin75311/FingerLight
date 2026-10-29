@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
+<!--
+  Hand-authored source fixture for the MusicXML ingest (A3).
+
+  Deliberately exercises the features that a naive reader gets wrong, each of which
+  produces a plausible-looking-but-wrong result rather than an error:
+
+    * <backup>        - the grand staff's second voice rewinds the cursor. Ignore it and
+                        the left hand lands AFTER the right hand instead of under it.
+    * <chord/>        - shares the previous note's onset; the cursor must not advance.
+    * divisions=4     - durations are in divisions, not quarters. Assuming 1 makes every
+                        duration 4x too short.
+    * <rest>          - advances the cursor but emits no note.
+    * tie across a barline - G4 in m2 is ONE note of 2000 ms, not two of 1000 ms.
+    * alter           - F#4 (+1) and Bb4 (-1) must reach MIDI 66 and 70.
+    * <staff>         - 1 = right hand, 2 = left hand. This is what feeds hand_mode.
+
+  This file is the *input*. The canonical fixture the tests read is MuseScore's
+  re-export of it, plus MuseScore's MIDI render as an independent ground truth -- see
+  score/tests/fixtures/README.md.
+-->
+<score-partwise version="4.0">
+  <work><work-title>Grand staff ingest fixture</work-title></work>
+  <part-list>
+    <score-part id="P1">
+      <part-name>Piano</part-name>
+      <score-instrument id="P1-I1"><instrument-name>Piano</instrument-name></score-instrument>
+    </score-part>
+  </part-list>
+  <part id="P1">
+
+    <measure number="1">
+      <attributes>
+        <divisions>4</divisions>
+        <key><fifths>0</fifths></key>
+        <time><beats>4</beats><beat-type>4</beat-type></time>
+        <staves>2</staves>
+        <clef number="1"><sign>G</sign><line>2</line></clef>
+        <clef number="2"><sign>F</sign><line>4</line></clef>
+      </attributes>
+      <direction placement="above">
+        <direction-type><metronome><beat-unit>quarter</beat-unit><per-minute>120</per-minute></metronome></direction-type>
+        <sound tempo="120"/>
+      </direction>
+
+      <note><pitch><step>C</step><octave>4</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type><staff>1</staff></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type><staff>1</staff></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>8</duration><voice>1</voice><type>half</type><staff>1</staff></note>
+
+      <backup><duration>16</duration></backup>
+
+      <note><pitch><step>C</step><octave>3</octave></pitch><duration>8</duration><voice>2</voice><type>half</type><staff>2</staff></note>
+      <note><chord/><pitch><step>G</step><octave>3</octave></pitch><duration>8</duration><voice>2</voice><type>half</type><staff>2</staff></note>
+      <note><rest/><duration>8</duration><voice>2</voice><type>half</type><staff>2</staff></note>
+    </measure>
+
+    <measure number="2">
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type><accidental>sharp</accidental><staff>1</staff></note>
+      <note><rest/><duration>4</duration><voice>1</voice><type>quarter</type><staff>1</staff></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>8</duration><tie type="start"/><voice>1</voice><type>half</type><staff>1</staff><notations><tied type="start"/></notations></note>
+
+      <backup><duration>16</duration></backup>
+
+      <note><pitch><step>F</step><octave>2</octave></pitch><duration>16</duration><voice>2</voice><type>whole</type><staff>2</staff></note>
+      <note><chord/><pitch><step>C</step><octave>3</octave></pitch><duration>16</duration><voice>2</voice><type>whole</type><staff>2</staff></note>
+    </measure>
+
+    <measure number="3">
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>8</duration><tie type="stop"/><voice>1</voice><type>half</type><staff>1</staff><notations><tied type="stop"/></notations></note>
+      <note><pitch><step>B</step><alter>-1</alter><octave>4</octave></pitch><duration>8</duration><voice>1</voice><type>half</type><accidental>flat</accidental><staff>1</staff></note>
+
+      <backup><duration>16</duration></backup>
+
+      <note><pitch><step>G</step><octave>2</octave></pitch><duration>16</duration><voice>2</voice><type>whole</type><staff>2</staff></note>
+    </measure>
+
+  </part>
+</score-partwise>

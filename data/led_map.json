@@ -1,0 +1,1264 @@
+{
+ "octave_span_mm": 164.8,
+ "white_pitch_mm": 23.5429,
+ "playing_width_mm": 1224.23,
+ "leds_per_m": 144,
+ "led_pitch_mm": 6.9444,
+ "led_count": 176,
+ "strip_origin_mm": 1.003,
+ "strip_origin_mode": "centred on the playing width",
+ "worst_centre_err_mm": 3.45,
+ "keys": [
+  {
+   "midi": 21,
+   "name": "A0",
+   "black": false,
+   "centre_mm": 7.85,
+   "tail_mm": 15.7,
+   "led": 0,
+   "leds_in_key": [
+    0,
+    1
+   ],
+   "err_mm": 3.37,
+   "naive_led": 2
+  },
+  {
+   "midi": 22,
+   "name": "A#0",
+   "black": true,
+   "centre_mm": 23.54,
+   "tail_mm": 15.7,
+   "led": 3,
+   "leds_in_key": [
+    2,
+    3
+   ],
+   "err_mm": -1.77,
+   "naive_led": 4
+  },
+  {
+   "midi": 23,
+   "name": "B0",
+   "black": false,
+   "centre_mm": 39.24,
+   "tail_mm": 15.7,
+   "led": 5,
+   "leds_in_key": [
+    4,
+    5,
+    6
+   ],
+   "err_mm": 0.04,
+   "naive_led": 6
+  },
+  {
+   "midi": 24,
+   "name": "C1",
+   "black": false,
+   "centre_mm": 53.95,
+   "tail_mm": 13.73,
+   "led": 7,
+   "leds_in_key": [
+    7,
+    8
+   ],
+   "err_mm": 0.87,
+   "naive_led": 8
+  },
+  {
+   "midi": 25,
+   "name": "C#1",
+   "black": true,
+   "centre_mm": 67.69,
+   "tail_mm": 13.73,
+   "led": 9,
+   "leds_in_key": [
+    9,
+    10
+   ],
+   "err_mm": 0.71,
+   "naive_led": 10
+  },
+  {
+   "midi": 26,
+   "name": "D1",
+   "black": false,
+   "centre_mm": 81.42,
+   "tail_mm": 13.73,
+   "led": 11,
+   "leds_in_key": [
+    11,
+    12
+   ],
+   "err_mm": 0.55,
+   "naive_led": 12
+  },
+  {
+   "midi": 27,
+   "name": "D#1",
+   "black": true,
+   "centre_mm": 95.15,
+   "tail_mm": 13.73,
+   "led": 13,
+   "leds_in_key": [
+    13,
+    14
+   ],
+   "err_mm": 0.4,
+   "naive_led": 14
+  },
+  {
+   "midi": 28,
+   "name": "E1",
+   "black": false,
+   "centre_mm": 108.89,
+   "tail_mm": 13.73,
+   "led": 15,
+   "leds_in_key": [
+    15,
+    16
+   ],
+   "err_mm": 0.24,
+   "naive_led": 16
+  },
+  {
+   "midi": 29,
+   "name": "F1",
+   "black": false,
+   "centre_mm": 122.62,
+   "tail_mm": 13.73,
+   "led": 17,
+   "leds_in_key": [
+    17,
+    18
+   ],
+   "err_mm": 0.09,
+   "naive_led": 18
+  },
+  {
+   "midi": 30,
+   "name": "F#1",
+   "black": true,
+   "centre_mm": 136.35,
+   "tail_mm": 13.73,
+   "led": 19,
+   "leds_in_key": [
+    19
+   ],
+   "err_mm": -0.07,
+   "naive_led": 20
+  },
+  {
+   "midi": 31,
+   "name": "G1",
+   "black": false,
+   "centre_mm": 150.09,
+   "tail_mm": 13.73,
+   "led": 21,
+   "leds_in_key": [
+    20,
+    21
+   ],
+   "err_mm": -0.22,
+   "naive_led": 22
+  },
+  {
+   "midi": 32,
+   "name": "G#1",
+   "black": true,
+   "centre_mm": 163.82,
+   "tail_mm": 13.73,
+   "led": 23,
+   "leds_in_key": [
+    22,
+    23
+   ],
+   "err_mm": -0.38,
+   "naive_led": 24
+  },
+  {
+   "midi": 33,
+   "name": "A1",
+   "black": false,
+   "centre_mm": 177.55,
+   "tail_mm": 13.73,
+   "led": 25,
+   "leds_in_key": [
+    24,
+    25
+   ],
+   "err_mm": -0.53,
+   "naive_led": 26
+  },
+  {
+   "midi": 34,
+   "name": "A#1",
+   "black": true,
+   "centre_mm": 191.29,
+   "tail_mm": 13.73,
+   "led": 27,
+   "leds_in_key": [
+    26,
+    27
+   ],
+   "err_mm": -0.69,
+   "naive_led": 28
+  },
+  {
+   "midi": 35,
+   "name": "B1",
+   "black": false,
+   "centre_mm": 205.02,
+   "tail_mm": 13.73,
+   "led": 29,
+   "leds_in_key": [
+    28,
+    29
+   ],
+   "err_mm": -0.85,
+   "naive_led": 30
+  },
+  {
+   "midi": 36,
+   "name": "C2",
+   "black": false,
+   "centre_mm": 218.75,
+   "tail_mm": 13.73,
+   "led": 31,
+   "leds_in_key": [
+    30,
+    31
+   ],
+   "err_mm": -1.0,
+   "naive_led": 32
+  },
+  {
+   "midi": 37,
+   "name": "C#2",
+   "black": true,
+   "centre_mm": 232.49,
+   "tail_mm": 13.73,
+   "led": 33,
+   "leds_in_key": [
+    32,
+    33
+   ],
+   "err_mm": -1.16,
+   "naive_led": 34
+  },
+  {
+   "midi": 38,
+   "name": "D2",
+   "black": false,
+   "centre_mm": 246.22,
+   "tail_mm": 13.73,
+   "led": 35,
+   "leds_in_key": [
+    34,
+    35
+   ],
+   "err_mm": -1.31,
+   "naive_led": 36
+  },
+  {
+   "midi": 39,
+   "name": "D#2",
+   "black": true,
+   "centre_mm": 259.95,
+   "tail_mm": 13.73,
+   "led": 37,
+   "leds_in_key": [
+    36,
+    37
+   ],
+   "err_mm": -1.47,
+   "naive_led": 38
+  },
+  {
+   "midi": 40,
+   "name": "E2",
+   "black": false,
+   "centre_mm": 273.69,
+   "tail_mm": 13.73,
+   "led": 39,
+   "leds_in_key": [
+    38,
+    39
+   ],
+   "err_mm": -1.62,
+   "naive_led": 40
+  },
+  {
+   "midi": 41,
+   "name": "F2",
+   "black": false,
+   "centre_mm": 287.42,
+   "tail_mm": 13.73,
+   "led": 41,
+   "leds_in_key": [
+    40,
+    41
+   ],
+   "err_mm": -1.78,
+   "naive_led": 42
+  },
+  {
+   "midi": 42,
+   "name": "F#2",
+   "black": true,
+   "centre_mm": 301.15,
+   "tail_mm": 13.73,
+   "led": 43,
+   "leds_in_key": [
+    42,
+    43
+   ],
+   "err_mm": -1.93,
+   "naive_led": 44
+  },
+  {
+   "midi": 43,
+   "name": "G2",
+   "black": false,
+   "centre_mm": 314.89,
+   "tail_mm": 13.73,
+   "led": 45,
+   "leds_in_key": [
+    44,
+    45
+   ],
+   "err_mm": -2.09,
+   "naive_led": 46
+  },
+  {
+   "midi": 44,
+   "name": "G#2",
+   "black": true,
+   "centre_mm": 328.62,
+   "tail_mm": 13.73,
+   "led": 47,
+   "leds_in_key": [
+    46,
+    47
+   ],
+   "err_mm": -2.25,
+   "naive_led": 48
+  },
+  {
+   "midi": 45,
+   "name": "A2",
+   "black": false,
+   "centre_mm": 342.35,
+   "tail_mm": 13.73,
+   "led": 49,
+   "leds_in_key": [
+    48,
+    49
+   ],
+   "err_mm": -2.4,
+   "naive_led": 50
+  },
+  {
+   "midi": 46,
+   "name": "A#2",
+   "black": true,
+   "centre_mm": 356.09,
+   "tail_mm": 13.73,
+   "led": 51,
+   "leds_in_key": [
+    50,
+    51
+   ],
+   "err_mm": -2.56,
+   "naive_led": 52
+  },
+  {
+   "midi": 47,
+   "name": "B2",
+   "black": false,
+   "centre_mm": 369.82,
+   "tail_mm": 13.73,
+   "led": 53,
+   "leds_in_key": [
+    52,
+    53
+   ],
+   "err_mm": -2.71,
+   "naive_led": 54
+  },
+  {
+   "midi": 48,
+   "name": "C3",
+   "black": false,
+   "centre_mm": 383.55,
+   "tail_mm": 13.73,
+   "led": 55,
+   "leds_in_key": [
+    54,
+    55
+   ],
+   "err_mm": -2.87,
+   "naive_led": 56
+  },
+  {
+   "midi": 49,
+   "name": "C#3",
+   "black": true,
+   "centre_mm": 397.29,
+   "tail_mm": 13.73,
+   "led": 57,
+   "leds_in_key": [
+    56,
+    57
+   ],
+   "err_mm": -3.02,
+   "naive_led": 58
+  },
+  {
+   "midi": 50,
+   "name": "D3",
+   "black": false,
+   "centre_mm": 411.02,
+   "tail_mm": 13.73,
+   "led": 59,
+   "leds_in_key": [
+    58,
+    59
+   ],
+   "err_mm": -3.18,
+   "naive_led": 60
+  },
+  {
+   "midi": 51,
+   "name": "D#3",
+   "black": true,
+   "centre_mm": 424.75,
+   "tail_mm": 13.73,
+   "led": 61,
+   "leds_in_key": [
+    60,
+    61
+   ],
+   "err_mm": -3.33,
+   "naive_led": 62
+  },
+  {
+   "midi": 52,
+   "name": "E3",
+   "black": false,
+   "centre_mm": 438.49,
+   "tail_mm": 13.73,
+   "led": 62,
+   "leds_in_key": [
+    62,
+    63
+   ],
+   "err_mm": 3.45,
+   "naive_led": 64
+  },
+  {
+   "midi": 53,
+   "name": "F3",
+   "black": false,
+   "centre_mm": 452.22,
+   "tail_mm": 13.73,
+   "led": 64,
+   "leds_in_key": [
+    64,
+    65
+   ],
+   "err_mm": 3.3,
+   "naive_led": 66
+  },
+  {
+   "midi": 54,
+   "name": "F#3",
+   "black": true,
+   "centre_mm": 465.95,
+   "tail_mm": 13.73,
+   "led": 66,
+   "leds_in_key": [
+    66,
+    67
+   ],
+   "err_mm": 3.14,
+   "naive_led": 68
+  },
+  {
+   "midi": 55,
+   "name": "G3",
+   "black": false,
+   "centre_mm": 479.69,
+   "tail_mm": 13.73,
+   "led": 68,
+   "leds_in_key": [
+    68,
+    69
+   ],
+   "err_mm": 2.99,
+   "naive_led": 70
+  },
+  {
+   "midi": 56,
+   "name": "G#3",
+   "black": true,
+   "centre_mm": 493.42,
+   "tail_mm": 13.73,
+   "led": 70,
+   "leds_in_key": [
+    70,
+    71
+   ],
+   "err_mm": 2.83,
+   "naive_led": 72
+  },
+  {
+   "midi": 57,
+   "name": "A3",
+   "black": false,
+   "centre_mm": 507.15,
+   "tail_mm": 13.73,
+   "led": 72,
+   "leds_in_key": [
+    72,
+    73
+   ],
+   "err_mm": 2.68,
+   "naive_led": 74
+  },
+  {
+   "midi": 58,
+   "name": "A#3",
+   "black": true,
+   "centre_mm": 520.89,
+   "tail_mm": 13.73,
+   "led": 74,
+   "leds_in_key": [
+    74,
+    75
+   ],
+   "err_mm": 2.52,
+   "naive_led": 76
+  },
+  {
+   "midi": 59,
+   "name": "B3",
+   "black": false,
+   "centre_mm": 534.62,
+   "tail_mm": 13.73,
+   "led": 76,
+   "leds_in_key": [
+    76,
+    77
+   ],
+   "err_mm": 2.37,
+   "naive_led": 78
+  },
+  {
+   "midi": 60,
+   "name": "C4",
+   "black": false,
+   "centre_mm": 548.35,
+   "tail_mm": 13.73,
+   "led": 78,
+   "leds_in_key": [
+    78,
+    79
+   ],
+   "err_mm": 2.21,
+   "naive_led": 80
+  },
+  {
+   "midi": 61,
+   "name": "C#4",
+   "black": true,
+   "centre_mm": 562.09,
+   "tail_mm": 13.73,
+   "led": 80,
+   "leds_in_key": [
+    80,
+    81
+   ],
+   "err_mm": 2.05,
+   "naive_led": 82
+  },
+  {
+   "midi": 62,
+   "name": "D4",
+   "black": false,
+   "centre_mm": 575.82,
+   "tail_mm": 13.73,
+   "led": 82,
+   "leds_in_key": [
+    82,
+    83
+   ],
+   "err_mm": 1.9,
+   "naive_led": 84
+  },
+  {
+   "midi": 63,
+   "name": "D#4",
+   "black": true,
+   "centre_mm": 589.55,
+   "tail_mm": 13.73,
+   "led": 84,
+   "leds_in_key": [
+    84,
+    85
+   ],
+   "err_mm": 1.74,
+   "naive_led": 86
+  },
+  {
+   "midi": 64,
+   "name": "E4",
+   "black": false,
+   "centre_mm": 603.29,
+   "tail_mm": 13.73,
+   "led": 86,
+   "leds_in_key": [
+    86,
+    87
+   ],
+   "err_mm": 1.59,
+   "naive_led": 88
+  },
+  {
+   "midi": 65,
+   "name": "F4",
+   "black": false,
+   "centre_mm": 617.02,
+   "tail_mm": 13.73,
+   "led": 88,
+   "leds_in_key": [
+    88,
+    89
+   ],
+   "err_mm": 1.43,
+   "naive_led": 90
+  },
+  {
+   "midi": 66,
+   "name": "F#4",
+   "black": true,
+   "centre_mm": 630.75,
+   "tail_mm": 13.73,
+   "led": 90,
+   "leds_in_key": [
+    90,
+    91
+   ],
+   "err_mm": 1.28,
+   "naive_led": 92
+  },
+  {
+   "midi": 67,
+   "name": "G4",
+   "black": false,
+   "centre_mm": 644.49,
+   "tail_mm": 13.73,
+   "led": 92,
+   "leds_in_key": [
+    92,
+    93
+   ],
+   "err_mm": 1.12,
+   "naive_led": 94
+  },
+  {
+   "midi": 68,
+   "name": "G#4",
+   "black": true,
+   "centre_mm": 658.22,
+   "tail_mm": 13.73,
+   "led": 94,
+   "leds_in_key": [
+    94,
+    95
+   ],
+   "err_mm": 0.97,
+   "naive_led": 96
+  },
+  {
+   "midi": 69,
+   "name": "A4",
+   "black": false,
+   "centre_mm": 671.95,
+   "tail_mm": 13.73,
+   "led": 96,
+   "leds_in_key": [
+    96,
+    97
+   ],
+   "err_mm": 0.81,
+   "naive_led": 98
+  },
+  {
+   "midi": 70,
+   "name": "A#4",
+   "black": true,
+   "centre_mm": 685.69,
+   "tail_mm": 13.73,
+   "led": 98,
+   "leds_in_key": [
+    98,
+    99
+   ],
+   "err_mm": 0.65,
+   "naive_led": 100
+  },
+  {
+   "midi": 71,
+   "name": "B4",
+   "black": false,
+   "centre_mm": 699.42,
+   "tail_mm": 13.73,
+   "led": 100,
+   "leds_in_key": [
+    100,
+    101
+   ],
+   "err_mm": 0.5,
+   "naive_led": 102
+  },
+  {
+   "midi": 72,
+   "name": "C5",
+   "black": false,
+   "centre_mm": 713.15,
+   "tail_mm": 13.73,
+   "led": 102,
+   "leds_in_key": [
+    102,
+    103
+   ],
+   "err_mm": 0.34,
+   "naive_led": 104
+  },
+  {
+   "midi": 73,
+   "name": "C#5",
+   "black": true,
+   "centre_mm": 726.89,
+   "tail_mm": 13.73,
+   "led": 104,
+   "leds_in_key": [
+    104,
+    105
+   ],
+   "err_mm": 0.19,
+   "naive_led": 106
+  },
+  {
+   "midi": 74,
+   "name": "D5",
+   "black": false,
+   "centre_mm": 740.62,
+   "tail_mm": 13.73,
+   "led": 106,
+   "leds_in_key": [
+    106
+   ],
+   "err_mm": 0.03,
+   "naive_led": 108
+  },
+  {
+   "midi": 75,
+   "name": "D#5",
+   "black": true,
+   "centre_mm": 754.35,
+   "tail_mm": 13.73,
+   "led": 108,
+   "leds_in_key": [
+    107,
+    108
+   ],
+   "err_mm": -0.12,
+   "naive_led": 110
+  },
+  {
+   "midi": 76,
+   "name": "E5",
+   "black": false,
+   "centre_mm": 768.09,
+   "tail_mm": 13.73,
+   "led": 110,
+   "leds_in_key": [
+    109,
+    110
+   ],
+   "err_mm": -0.28,
+   "naive_led": 112
+  },
+  {
+   "midi": 77,
+   "name": "F5",
+   "black": false,
+   "centre_mm": 781.82,
+   "tail_mm": 13.73,
+   "led": 112,
+   "leds_in_key": [
+    111,
+    112
+   ],
+   "err_mm": -0.43,
+   "naive_led": 114
+  },
+  {
+   "midi": 78,
+   "name": "F#5",
+   "black": true,
+   "centre_mm": 795.55,
+   "tail_mm": 13.73,
+   "led": 114,
+   "leds_in_key": [
+    113,
+    114
+   ],
+   "err_mm": -0.59,
+   "naive_led": 116
+  },
+  {
+   "midi": 79,
+   "name": "G5",
+   "black": false,
+   "centre_mm": 809.29,
+   "tail_mm": 13.73,
+   "led": 116,
+   "leds_in_key": [
+    115,
+    116
+   ],
+   "err_mm": -0.75,
+   "naive_led": 118
+  },
+  {
+   "midi": 80,
+   "name": "G#5",
+   "black": true,
+   "centre_mm": 823.02,
+   "tail_mm": 13.73,
+   "led": 118,
+   "leds_in_key": [
+    117,
+    118
+   ],
+   "err_mm": -0.9,
+   "naive_led": 120
+  },
+  {
+   "midi": 81,
+   "name": "A5",
+   "black": false,
+   "centre_mm": 836.75,
+   "tail_mm": 13.73,
+   "led": 120,
+   "leds_in_key": [
+    119,
+    120
+   ],
+   "err_mm": -1.06,
+   "naive_led": 122
+  },
+  {
+   "midi": 82,
+   "name": "A#5",
+   "black": true,
+   "centre_mm": 850.49,
+   "tail_mm": 13.73,
+   "led": 122,
+   "leds_in_key": [
+    121,
+    122
+   ],
+   "err_mm": -1.21,
+   "naive_led": 124
+  },
+  {
+   "midi": 83,
+   "name": "B5",
+   "black": false,
+   "centre_mm": 864.22,
+   "tail_mm": 13.73,
+   "led": 124,
+   "leds_in_key": [
+    123,
+    124
+   ],
+   "err_mm": -1.37,
+   "naive_led": 126
+  },
+  {
+   "midi": 84,
+   "name": "C6",
+   "black": false,
+   "centre_mm": 877.95,
+   "tail_mm": 13.73,
+   "led": 126,
+   "leds_in_key": [
+    125,
+    126
+   ],
+   "err_mm": -1.52,
+   "naive_led": 128
+  },
+  {
+   "midi": 85,
+   "name": "C#6",
+   "black": true,
+   "centre_mm": 891.69,
+   "tail_mm": 13.73,
+   "led": 128,
+   "leds_in_key": [
+    127,
+    128
+   ],
+   "err_mm": -1.68,
+   "naive_led": 130
+  },
+  {
+   "midi": 86,
+   "name": "D6",
+   "black": false,
+   "centre_mm": 905.42,
+   "tail_mm": 13.73,
+   "led": 130,
+   "leds_in_key": [
+    129,
+    130
+   ],
+   "err_mm": -1.83,
+   "naive_led": 132
+  },
+  {
+   "midi": 87,
+   "name": "D#6",
+   "black": true,
+   "centre_mm": 919.15,
+   "tail_mm": 13.73,
+   "led": 132,
+   "leds_in_key": [
+    131,
+    132
+   ],
+   "err_mm": -1.99,
+   "naive_led": 134
+  },
+  {
+   "midi": 88,
+   "name": "E6",
+   "black": false,
+   "centre_mm": 932.89,
+   "tail_mm": 13.73,
+   "led": 134,
+   "leds_in_key": [
+    133,
+    134
+   ],
+   "err_mm": -2.15,
+   "naive_led": 136
+  },
+  {
+   "midi": 89,
+   "name": "F6",
+   "black": false,
+   "centre_mm": 946.62,
+   "tail_mm": 13.73,
+   "led": 136,
+   "leds_in_key": [
+    135,
+    136
+   ],
+   "err_mm": -2.3,
+   "naive_led": 138
+  },
+  {
+   "midi": 90,
+   "name": "F#6",
+   "black": true,
+   "centre_mm": 960.35,
+   "tail_mm": 13.73,
+   "led": 138,
+   "leds_in_key": [
+    137,
+    138
+   ],
+   "err_mm": -2.46,
+   "naive_led": 140
+  },
+  {
+   "midi": 91,
+   "name": "G6",
+   "black": false,
+   "centre_mm": 974.09,
+   "tail_mm": 13.73,
+   "led": 140,
+   "leds_in_key": [
+    139,
+    140
+   ],
+   "err_mm": -2.61,
+   "naive_led": 142
+  },
+  {
+   "midi": 92,
+   "name": "G#6",
+   "black": true,
+   "centre_mm": 987.82,
+   "tail_mm": 13.73,
+   "led": 142,
+   "leds_in_key": [
+    141,
+    142
+   ],
+   "err_mm": -2.77,
+   "naive_led": 144
+  },
+  {
+   "midi": 93,
+   "name": "A6",
+   "black": false,
+   "centre_mm": 1001.55,
+   "tail_mm": 13.73,
+   "led": 144,
+   "leds_in_key": [
+    143,
+    144
+   ],
+   "err_mm": -2.92,
+   "naive_led": 146
+  },
+  {
+   "midi": 94,
+   "name": "A#6",
+   "black": true,
+   "centre_mm": 1015.29,
+   "tail_mm": 13.73,
+   "led": 146,
+   "leds_in_key": [
+    145,
+    146
+   ],
+   "err_mm": -3.08,
+   "naive_led": 148
+  },
+  {
+   "midi": 95,
+   "name": "B6",
+   "black": false,
+   "centre_mm": 1029.02,
+   "tail_mm": 13.73,
+   "led": 148,
+   "leds_in_key": [
+    147,
+    148
+   ],
+   "err_mm": -3.23,
+   "naive_led": 150
+  },
+  {
+   "midi": 96,
+   "name": "C7",
+   "black": false,
+   "centre_mm": 1042.75,
+   "tail_mm": 13.73,
+   "led": 150,
+   "leds_in_key": [
+    149,
+    150
+   ],
+   "err_mm": -3.39,
+   "naive_led": 152
+  },
+  {
+   "midi": 97,
+   "name": "C#7",
+   "black": true,
+   "centre_mm": 1056.49,
+   "tail_mm": 13.73,
+   "led": 151,
+   "leds_in_key": [
+    151,
+    152
+   ],
+   "err_mm": 3.4,
+   "naive_led": 154
+  },
+  {
+   "midi": 98,
+   "name": "D7",
+   "black": false,
+   "centre_mm": 1070.22,
+   "tail_mm": 13.73,
+   "led": 153,
+   "leds_in_key": [
+    153,
+    154
+   ],
+   "err_mm": 3.24,
+   "naive_led": 156
+  },
+  {
+   "midi": 99,
+   "name": "D#7",
+   "black": true,
+   "centre_mm": 1083.95,
+   "tail_mm": 13.73,
+   "led": 155,
+   "leds_in_key": [
+    155,
+    156
+   ],
+   "err_mm": 3.09,
+   "naive_led": 158
+  },
+  {
+   "midi": 100,
+   "name": "E7",
+   "black": false,
+   "centre_mm": 1097.69,
+   "tail_mm": 13.73,
+   "led": 157,
+   "leds_in_key": [
+    157,
+    158
+   ],
+   "err_mm": 2.93,
+   "naive_led": 160
+  },
+  {
+   "midi": 101,
+   "name": "F7",
+   "black": false,
+   "centre_mm": 1111.42,
+   "tail_mm": 13.73,
+   "led": 159,
+   "leds_in_key": [
+    159,
+    160
+   ],
+   "err_mm": 2.78,
+   "naive_led": 162
+  },
+  {
+   "midi": 102,
+   "name": "F#7",
+   "black": true,
+   "centre_mm": 1125.15,
+   "tail_mm": 13.73,
+   "led": 161,
+   "leds_in_key": [
+    161,
+    162
+   ],
+   "err_mm": 2.62,
+   "naive_led": 164
+  },
+  {
+   "midi": 103,
+   "name": "G7",
+   "black": false,
+   "centre_mm": 1138.89,
+   "tail_mm": 13.73,
+   "led": 163,
+   "leds_in_key": [
+    163,
+    164
+   ],
+   "err_mm": 2.47,
+   "naive_led": 166
+  },
+  {
+   "midi": 104,
+   "name": "G#7",
+   "black": true,
+   "centre_mm": 1152.62,
+   "tail_mm": 13.73,
+   "led": 165,
+   "leds_in_key": [
+    165,
+    166
+   ],
+   "err_mm": 2.31,
+   "naive_led": 168
+  },
+  {
+   "midi": 105,
+   "name": "A7",
+   "black": false,
+   "centre_mm": 1166.35,
+   "tail_mm": 13.73,
+   "led": 167,
+   "leds_in_key": [
+    167,
+    168
+   ],
+   "err_mm": 2.15,
+   "naive_led": 170
+  },
+  {
+   "midi": 106,
+   "name": "A#7",
+   "black": true,
+   "centre_mm": 1180.09,
+   "tail_mm": 13.73,
+   "led": 169,
+   "leds_in_key": [
+    169,
+    170
+   ],
+   "err_mm": 2.0,
+   "naive_led": 172
+  },
+  {
+   "midi": 107,
+   "name": "B7",
+   "black": false,
+   "centre_mm": 1193.82,
+   "tail_mm": 13.73,
+   "led": 171,
+   "leds_in_key": [
+    171,
+    172
+   ],
+   "err_mm": 1.84,
+   "naive_led": 174
+  },
+  {
+   "midi": 108,
+   "name": "C8",
+   "black": false,
+   "centre_mm": 1212.46,
+   "tail_mm": 23.54,
+   "led": 174,
+   "leds_in_key": [
+    173,
+    174,
+    175
+   ],
+   "err_mm": -0.35,
+   "naive_led": 176
+  }
+ ],
+ "plv_shift": -2,
+ "plv_note_offsets": [
+  [
+   21,
+   -1
+  ],
+  [
+   51,
+   1
+  ],
+  [
+   96,
+   1
+  ],
+  [
+   107,
+   -1
+  ]
+ ]
+}

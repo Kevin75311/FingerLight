@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ScoreForge — forge scores from sound</title>
+<meta name="description" content="ScoreForge turns a song into guitar tablature or piano sheet music, on your own machine.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#119070;</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wordmark">
+    <span class="clef" aria-hidden="true">&#119070;</span>
+    <h1>ScoreForge</h1>
+    <p class="tagline">forge scores from sound</p>
+  </div>
+  <div class="engine-chips" id="engine-chips" title="What the local engine has available">
+    <span class="chip" id="chip-engine">engine: connecting&hellip;</span>
+  </div>
+</header>
+
+<div class="connect-bar" id="connect-bar" hidden>
+  <p>No engine here. This page needs the ScoreForge engine running on your machine —
+     start it with <code>python -m scoreforge</code>, then connect:</p>
+  <form id="connect-form">
+    <input type="url" id="engine-url" placeholder="http://127.0.0.1:8765" spellcheck="false">
+    <button type="submit" class="btn-quiet">Connect</button>
+  </form>
+</div>
+
+<main class="board">
+
+  <!-- ──────────────────────────── input channel strip ─────────────────── -->
+  <section class="strip" aria-labelledby="input-title">
+    <h2 class="strip-title" id="input-title">Input</h2>
+
+    <label class="dropzone" id="dropzone" for="file-input">
+      <input type="file" id="file-input" accept=".mp3,.wav,.flac,.ogg,.m4a,.aac,.opus,.wma">
+      <div class="dropzone-staff" aria-hidden="true"></div>
+      <div class="dropzone-copy">
+        <strong id="drop-label">Drop a song here</strong>
+        <span id="drop-sub">mp3 · wav · flac · m4a &nbsp;—&nbsp; or click to browse</span>
+      </div>
+    </label>
+
+    <fieldset class="opt-group">
+      <legend>Write a score for</legend>
+      <div class="seg" role="radiogroup" aria-label="Target instrument">
+        <label><input type="radio" name="instrument" value="guitar" checked>
+          <span>Guitar <small>tab, .gp5</small></span></label>
+        <label><input type="radio" name="instrument" value="piano">
+          <span>Piano <small>sheet, MIDI</small></span></label>
+      </div>
+    </fieldset>
+
+    <fieldset class="opt-group">
+      <legend>The recording is</legend>
+      <div class="seg" role="radiogroup" aria-label="Source type">
+        <label><input type="radio" name="source" value="mix" checked>
+          <span>A full mix <small>band / vocals — separate it first</small></span></label>
+        <label><input type="radio" name="source" value="solo">
+          <span>Already solo <small>pure guitar or piano — skip separation</small></span></label>
+      </div>
+    </fieldset>
+
+    <fieldset class="opt-group">
+      <legend>Extras</legend>
+      <label class="toggle" id="opt-melody-row">
+        <input type="checkbox" id="opt-melody">
+        <span class="knob" aria-hidden="true"></span>
+        <span class="toggle-copy">Also transcribe the vocal melody
+          <small>the sung line, reduced to one voice</small></span>
+      </label>
+      <label class="toggle" id="opt-chords-row">
+        <input type="checkbox" id="opt-chords" checked>
+        <span class="knob" aria-hidden="true"></span>
+        <span class="toggle-copy">Detect chords
+          <small>names each measure, suggests a capo</small></span>
+      </label>
+      <label class="toggle" id="opt-pdf-row">
+        <input type="checkbox" id="opt-pdf" checked>
+        <span class="knob" aria-hidden="true"></span>
+        <span class="toggle-copy">Render a PDF
+          <small id="pdf-hint">via MuseScore</small></span>
+      </label>
+      <label class="toggle">
+        <input type="checkbox" id="opt-debug">
+        <span class="knob" aria-hidden="true"></span>
+        <span class="toggle-copy">Keep inspection files
+          <small>note CSVs, sonified audio, per-note fret log</small></span>
+      </label>
+      <div class="numrow" id="opt-fret-row">
+        <label for="opt-maxfret">Highest fret to use</label>
+        <input type="number" id="opt-maxfret" min="4" max="24" value="19">
+      </div>
+    </fieldset>
+
+    <button class="forge-btn" id="forge-btn" disabled>Forge the score</button>
+    <p class="fineprint">Everything runs on this machine. Nothing is uploaded anywhere.</p>
+  </section>
+
+  <!-- ──────────────────────────────── session ─────────────────────────── -->
+  <section class="session" aria-labelledby="session-title">
+    <h2 class="strip-title" id="session-title">Session</h2>
+
+    <div class="stave-card">
+      <div class="stave" id="stave" role="list" aria-label="Pipeline stages">
+        <!-- stage nodes injected by app.js -->
+      </div>
+      <p class="stave-status" id="stave-status">Waiting for a song.</p>
+    </div>
+
+    <div class="log-card" id="log-card" hidden>
+      <div class="log-head">
+        <span>Engine log</span>
+        <span class="log-time" id="log-time"></span>
+      </div>
+      <pre class="log" id="log" aria-live="polite"></pre>
+    </div>
+
+    <div class="results-card" id="results-card" hidden>
+      <h3>Your score</h3>
+      <div class="summary" id="summary"></div>
+      <div class="downloads" id="downloads"></div>
+      <button class="btn-quiet" id="again-btn">Convert another song</button>
+    </div>
+  </section>
+</main>
+
+<footer class="colophon">
+  <p>ScoreForge · Demucs&nbsp;· Basic&nbsp;Pitch&nbsp;· bytedance&nbsp;piano&nbsp;model&nbsp;· madmom&nbsp;· PyGuitarPro&nbsp;· MuseScore</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

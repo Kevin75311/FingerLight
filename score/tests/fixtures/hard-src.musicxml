@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
+<!--
+  Second fixture: the features the first one does NOT reach.
+
+  grand-staff-src.musicxml covers the common grand-staff path. This one exists because
+  the ingest also claims to handle grace notes, mid-score tempo changes, repeats and a
+  second voice on one staff -- and claims verified only by reading code are not claims.
+
+    * <grace/>                 - no <duration>; must not advance the cursor.
+    * mid-score tempo change   - measure 2 drops to 60 bpm, so its quarter is 1000 ms
+                                 while measure 1's is 500 ms. A parser that reads tempo
+                                 once puts every later note at the wrong time.
+    * repeat barlines          - measure 2 is inside |: :|. We deliberately do NOT
+                                 unfold; MuseScore's MIDI DOES. That divergence is the
+                                 test: the parser must warn rather than silently differ.
+    * two voices on one staff  - voice 1 and voice 2 both on staff 1, needing a <backup>
+                                 that does NOT change staff. A parser keying hand off
+                                 voice instead of staff gets this wrong.
+-->
+<score-partwise version="4.0">
+  <work><work-title>Hard ingest fixture</work-title></work>
+  <part-list>
+    <score-part id="P1">
+      <part-name>Piano</part-name>
+      <score-instrument id="P1-I1"><instrument-name>Piano</instrument-name></score-instrument>
+    </score-part>
+  </part-list>
+  <part id="P1">
+
+    <measure number="1">
+      <attributes>
+        <divisions>4</divisions>
+        <key><fifths>0</fifths></key>
+        <time><beats>4</beats><beat-type>4</beat-type></time>
+        <staves>2</staves>
+        <clef number="1"><sign>G</sign><line>2</line></clef>
+        <clef number="2"><sign>F</sign><line>4</line></clef>
+      </attributes>
+      <direction placement="above">
+        <direction-type><metronome><beat-unit>quarter</beat-unit><per-minute>120</per-minute></metronome></direction-type>
+        <sound tempo="120"/>
+      </direction>
+
+      <note><grace slash="yes"/><pitch><step>D</step><octave>4</octave></pitch><voice>1</voice><type>eighth</type><staff>1</staff></note>
+      <note><pitch><step>C</step><octave>4</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type><staff>1</staff></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>4</duration><voice>1</voice><type>quarter</type><staff>1</staff></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>8</duration><voice>1</voice><type>half</type><staff>1</staff></note>
+
+      <backup><duration>16</duration></backup>
+
+      <note><pitch><step>A</step><octave>3</octave></pitch><duration>16</duration><voice>2</voice><type>whole</type><staff>1</staff></note>
+
+      <backup><duration>16</duration></backup>
+
+      <note><pitch><step>C</step><octave>3</octave></pitch><duration>16</duration><voice>5</voice><type>whole</type><staff>2</staff></note>
+    </measure>
+
+    <measure number="2">
+      <barline location="left">
+        <bar-style>heavy-light</bar-style>
+        <repeat direction="forward"/>
+      </barline>
+      <direction placement="above">
+        <direction-type><metronome><beat-unit>quarter</beat-unit><per-minute>60</per-minute></metronome></direction-type>
+        <sound tempo="60"/>
+      </direction>
+
+      <note><pitch><step>C</step><octave>4</octave></pitch><duration>8</duration><voice>1</voice><type>half</type><staff>1</staff></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>8</duration><voice>1</voice><type>half</type><staff>1</staff></note>
+
+      <backup><duration>16</duration></backup>
+
+      <note><pitch><step>G</step><octave>2</octave></pitch><duration>16</duration><voice>5</voice><type>whole</type><staff>2</staff></note>
+
+      <barline location="right">
+        <bar-style>light-heavy</bar-style>
+        <repeat direction="backward"/>
+      </barline>
+    </measure>
+
+  </part>
+</score-partwise>

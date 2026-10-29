@@ -1,0 +1,33 @@
+# Pipeline outputs (audio stems, MIDI, .gp5, PDF) -- regenerated per run
+output/
+
+# Local test audio (personal/copyrighted material -- never publish)
+songs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Model caches downloaded by demucs/basic-pitch at runtime
+.cache/
+*.pt
+*.onnx
+
+# OS/editor cruft
+.DS_Store
+.vscode/
+.idea/
+
+# NOTE: external/ (git submodules) is intentionally NOT ignored -- submodule
+# references must stay tracked in this repo.

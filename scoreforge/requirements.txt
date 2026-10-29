@@ -1,0 +1,37 @@
+# Core dependencies for the scoreforge package itself.
+# Install with:  pip install -r requirements.txt
+# (or, equivalently, `pip install -e .` which reads pyproject.toml)
+pretty_midi
+PyGuitarPro
+
+# Local web GUI (python -m scoreforge)
+fastapi
+uvicorn
+python-multipart
+
+# Optional: piano-specialized transcription (bytedance model, MIT). Piano mode
+# falls back to Basic Pitch without it.
+# piano-transcription-inference
+
+# setuptools>=81 dropped the pkg_resources module; resampy (pulled in transitively by
+# basic-pitch) still imports it and crashes at runtime otherwise:
+#   ModuleNotFoundError: No module named 'pkg_resources'
+# Pin until resampy/basic-pitch drop the pkg_resources dependency upstream.
+setuptools<81
+
+# Chord recognition (optional -- pipeline soft-skips this stage if missing). Real
+# madmom (PyPI, upstream github.com/CPJKU/madmom) doesn't build on Windows/Python 3.11
+# (unresolved MSVC/Cython issues). madmom-prebuilt ships real cp311-win_amd64 wheels of
+# the same code instead. Its wheel has its own packaging bug -- see README's "Chord
+# detection setup" section for a required one-time manual fix after installing this.
+madmom-prebuilt
+
+# --- Not installable via this file: git submodules under external/ ---
+# These are vendored as git submodules (not PyPI-published in a form this file can
+# pin) and must be installed manually after `git submodule update --init --recursive`:
+#
+#   pip install -e external/demucs
+#   pip install -e external/basic-pitch
+#
+# See README.md for full setup instructions, including the optional MuseScore install
+# used only for the final PDF-rendering stage.

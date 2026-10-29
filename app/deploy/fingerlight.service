@@ -1,0 +1,17 @@
+# Finger_Light app server.  A template: app/deploy/install_app.sh fills in the user
+# and the repo path, so do not copy this file into /etc by hand.
+[Unit]
+Description=Finger_Light app (touchscreen UI, LED bar, MIDI)
+After=network.target sound.target
+
+[Service]
+# The user's own groups apply (spi, gpio, audio -- added by tools/hw/setup_pi.sh).
+User=@USER@
+WorkingDirectory=@REPO@
+Environment=PYTHONUNBUFFERED=1 PYTHONUTF8=1 PYTHONIOENCODING=utf-8
+ExecStart=/usr/bin/python3 @REPO@/app/server.py --host 0.0.0.0 --port 8080
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
