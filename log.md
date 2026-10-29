@@ -10,8 +10,8 @@ tags: [log]
 
 Append-only. Newest entry at the **bottom**. One entry per working session.
 
-Entrance: [[index]] · Current state and what's next: [[README]] · Decisions and open
-questions: [[decisions]]
+Entrance: [index](docs/index.md) · Current state and what's next: [README](README.md) · Decisions and open
+questions: [decisions](docs/decisions.md)
 
 ## How to use this
 
@@ -29,30 +29,30 @@ Every session appends one `##` entry using the template at the foot of this note
 ## 2026-09-15 — project set up (Parts 1 + docs)
 
 **Done**
-- Part 1 written in full → [[01-mechanical-and-hardware-survey]]
-- Upstream code mapped → [[02-upstream-baseline]]; decisions D-01…D-24 → [[03-decision-log]]
+- Part 1 written in full → [01-mechanical-and-hardware-survey](docs/hardware.md)
+- Upstream code mapped → [02-upstream-baseline](docs/provenance.md); decisions D-01…D-24 → [03-decision-log](docs/decisions.md)
 - `tools/gen_map.py` written; `data/led_map.{csv,json}` generated at the assumed 164.1 mm octave
-- ScoreForge delivered, digested and vendored → [[04-scoreforge-merge]]; Q-03 closed, Q-04 closed (DP, D-22)
+- ScoreForge delivered, digested and vendored → [04-scoreforge-merge](docs/provenance.md); Q-03 closed, Q-04 closed (DP, D-22)
 
 **Open at end of session:** Q-01, Q-02, Q-05, Q-06, Q-07, Q-08, Q-09.
 
 ## 2026-09-15 — status audit + plan + dimension spec
 
 **Done**
-- Audited the tree against the docs → [[05-status-audit]]
-- Wrote the ordered plan → [[06-implementation-plan]]
-- Wrote the full dimension checklist in four tiers → [[07-mechanical-dimension-spec]]
-- Created this log; rewired [[index]] as the single entrance
+- Audited the tree against the docs → [05-status-audit](log.md)
+- Wrote the ordered plan → [06-implementation-plan](docs/index.md)
+- Wrote the full dimension checklist in four tiers → [07-mechanical-dimension-spec](docs/hardware.md)
+- Created this log; rewired [index](docs/index.md) as the single entrance
 
-**Found — three gaps between docs and tree** (details in [[05-status-audit]] §2):
+**Found — three gaps between docs and tree** (details in [05-status-audit](log.md) §2):
 
 | Finding | Evidence | Status |
 |---|---|---|
-| `external/Piano-LED-Visualizer/` does **not** exist, though [[HANDOFF]] §3 says it is cloned at `b502ad67` | `find` over `Box/Projects`, no match | **VERIFIED** — blocks checking [[02-upstream-baseline]]'s file:line refs |
+| `external/Piano-LED-Visualizer/` does **not** exist, though [HANDOFF](docs/index.md) §3 says it is cloned at `b502ad67` | `find` over `Box/Projects`, no match | **VERIFIED** — blocks checking [02-upstream-baseline](docs/provenance.md)'s file:line refs |
 | No git repo anywhere in the project | no `.git` found | **VERIFIED** |
 | ScoreForge only partially importable here — `pyproject.toml` wants Python `>=3.11,<3.12`, PATH has **3.12.7** | `pytest`: `test_chord.py` 19 passed; `test_tab.py` + `test_melody.py` fail collection, `ModuleNotFoundError: guitarpro` | **VERIFIED** |
 
-**Found — one doc inconsistency:** [[01-mechanical-and-hardware-survey]] gives worst-case
+**Found — one doc inconsistency:** [01-mechanical-and-hardware-survey](docs/hardware.md) gives worst-case
 centring error as both 3.42 mm and 3.47 mm. Not a contradiction: **3.4722 mm** is the
 quantisation floor (LED pitch 6.9444 ÷ 2), **3.42 mm** is what the generated map achieves.
 The survey should say so. *(not yet edited)*
@@ -61,32 +61,32 @@ The survey should say so. *(not yet edited)*
 published figures exactly — worst error 3.42 mm, `shift = -1`,
 `note_offsets = [[47,1],[79,1]]`, 88/88 unique primary LEDs.
 
-**Next:** [[06-implementation-plan]] Step 0 (git init, re-clone upstream at the pin,
+**Next:** [06-implementation-plan](docs/index.md) Step 0 (git init, re-clone upstream at the pin,
 3.11 venv), and ask Kevin for M1 + the overhead panel photo.
 
 ## 2026-09-15 — M1 landed; firmware B1–B3 built; mechanical handed off
 
 **Scope change (Kevin):** he owns the mechanical build and will deliver a CAD file. The
-software tracks **one** mechanical parameter, M1. [[07-mechanical-dimension-spec]] rewritten
-to match; [[00-measurements]] collapsed to M1; Q-02 closed on those terms.
+software tracks **one** mechanical parameter, M1. [07-mechanical-dimension-spec](docs/hardware.md) rewritten
+to match; [00-measurements](docs/hardware.md) collapsed to M1; Q-02 closed on those terms.
 
 **M1 = 164.8 mm.** Raw reading "5 octaves = 82.4mm, one octave ≈ 16.5" is a **unit slip** —
 82.4 mm would make an 88-key keyboard 122 mm wide against a 1322 mm cabinet. Read as
 **82.4 cm** it gives 164.8 mm/octave and a 1224.2 mm playing width, which fits. Used the
-cm reading; recorded in [[07-mechanical-dimension-spec]].
+cm reading; recorded in [07-mechanical-dimension-spec](docs/hardware.md).
 
 | Step | Result |
 |---|---|
 | Regenerated map at 164.8 | 88/88 unique LEDs, range 2–175, worst error **3.4 mm**; correction simplifies to `shift=0`, `note_offsets=[[63,1]]` |
 | Step 0.2 upstream clone | **done** — `HEAD=b502ad67ffdc4682…` (2026-08-30), matches the claimed pin |
-| Step 0.3 citation check | **done** — `lib/functions.py:528` is `get_note_position` verbatim as [[02-upstream-baseline]] quotes it |
+| Step 0.3 citation check | **done** — `lib/functions.py:528` is `get_note_position` verbatim as [02-upstream-baseline](docs/provenance.md) quotes it |
 | Step 0.4 3.11 venv | **not needed** — the DP is being *ported*, not imported, so `guitarpro` and the `<3.12` pin are sidestepped |
 | Step 0.1 `git init` | **not done — Kevin's call** (git inside a Box-synced folder) |
 
 **Box fought the clone.** Cloning into `external/` made Box rename the folder to
 `external (jykevinhuang@ucla.edu)` — its conflict marker for an unsyncable `.git`. Moved
 the clone to `C:\Users\Kevin\dev\Piano-LED-Visualizer`, outside Box. `external/` no longer
-exists in the project; [[HANDOFF]], `firmware/README.md` and [[firmware-index]] updated.
+exists in the project; [HANDOFF](docs/index.md), `firmware/README.md` and [firmware-index](docs/firmware.md) updated.
 
 **Built (all verified by test run, no hardware):**
 
@@ -99,7 +99,7 @@ exists in the project; [[HANDOFF]], `firmware/README.md` and [[firmware-index]] 
   taste call, left to Kevin.**
 - **B3 — practice state machine.** `lightscore.py` + `practice.py`.
 - **A1 — fingering DP port:** delegated, in progress.
-- `tools/check_vault.py` — vault link checker; 24/24 notes reachable from [[index]], 0 broken.
+- `tools/check_vault.py` — vault link checker; 24/24 notes reachable from [index](docs/index.md), 0 broken.
 
 **Evidence**
 ```
@@ -115,7 +115,7 @@ python tools/check_vault.py          ->  24/24 reachable, 0 broken, EXIT=0
 | Palette `anchors` fingers 2 and 3 only 60 apart — indistinguishable | separation-floor check |
 | I asserted upstream's *defaults* overrun the strip; they don't | test failed, forcing a re-measurement |
 
-**Correction to [[HANDOFF]] §4.2** (measured, not argued): the "asks for LED 176" overrun
+**Correction to [HANDOFF](docs/index.md) §4.2** (measured, not argued): the "asks for LED 176" overrun
 belongs to the **no-offset** formula. Upstream's actual defaults stay in range but are
 worse in a quieter way — **G#6 and A6 land on LED 143 together** and become
 indistinguishable, with a 2-LED (~14 mm) drift at the top. Both pinned as regression tests.
@@ -318,7 +318,7 @@ source. Rather than chase the factor, the claim was restated so it does not depe
 **the worst swept configuration (44100 Hz, 2048-sample frames, 10 candidates) has a PC
 realtime factor of 0.0131, so the Pi would have to be ~76× slower than this PC before
 realtime fails** — 3–5× of margin even if 15–25× is badly wrong. Recorded in
-[[06-implementation-plan]] and [[HANDOFF]] §7.
+[06-implementation-plan](docs/index.md) and [HANDOFF](docs/index.md) §7.
 
 **Found — two agents hit the same trap the other's work created.** Both A2's first
 split-point design and A4's first default-output-path wrote or split wrongly in ways that
@@ -328,7 +328,7 @@ hand's own internal C3→G3 gap (7 semitones) is wider than the true LH/RH bound
 were caught by their own regression tests before acceptance, not by review.
 
 **Also:** `README.md` rewritten against the real tree (it still said Part 2 "not started",
-M1 "waiting", and pointed at the long-gone `external/` clone). [[HANDOFF]] §3, §4.5 and §7
+M1 "waiting", and pointed at the long-gone `external/` clone). [HANDOFF](docs/index.md) §3, §4.5 and §7
 updated; §4.5's "nobody has measured the piano yet" is resolved — M1 = 164.8 mm.
 
 **Verified vs. assumed**
@@ -357,18 +357,18 @@ concept.
 **Done.** Kevin asked for the whole documentation system simplified — "concise, simple,
 easy to read, but has all the details at the same time". He picked the moderate option
 (one note per Part) from three offered. Five merged notes written in parallel, each by an
-agent given one bounded source set and a shared style contract; [[README]] and [[index]]
+agent given one bounded source set and a shared style contract; [README](README.md) and [index](docs/index.md)
 written directly.
 
 | Now | Absorbs | Words |
 |---|---|---|
-| [[README]] | old README, HANDOFF §1–4, the quick-reference table | ~900 |
-| [[index]] | old index, HANDOFF §5, research-index | ~450 |
-| [[hardware]] | 01-survey, 00-measurements, 07-dimension-spec, hardware-index, hardware/README | 3,967 |
-| [[firmware]] | firmware-index, audio-verification-benchmark, firmware/README, plan Track B | 2,382 |
-| [[score]] | score-index, lightscore-format, omr, score/README, lightscore/README, plan Track A | 2,305 |
-| [[decisions]] | 03-decision-log + every open question's current status | 1,852 |
-| [[provenance]] | 02-upstream-baseline, 04-scoreforge-merge + the 2026-09-16 verified findings | ~2,600 |
+| [README](README.md) | old README, HANDOFF §1–4, the quick-reference table | ~900 |
+| [index](docs/index.md) | old index, HANDOFF §5, research-index | ~450 |
+| [hardware](docs/hardware.md) | 01-survey, 00-measurements, 07-dimension-spec, hardware-index, hardware/README | 3,967 |
+| [firmware](docs/firmware.md) | firmware-index, audio-verification-benchmark, firmware/README, plan Track B | 2,382 |
+| [score](docs/score.md) | score-index, lightscore-format, omr, score/README, lightscore/README, plan Track A | 2,305 |
+| [decisions](docs/decisions.md) | 03-decision-log + every open question's current status | 1,852 |
+| [provenance](docs/provenance.md) | 02-upstream-baseline, 04-scoreforge-merge + the 2026-09-16 verified findings | ~2,600 |
 
 **29,694 words → ~17,000.** Research surveys kept untouched as an archive. 05-status-audit
 was dropped: it was a point-in-time audit whose findings are already in this log.
@@ -393,14 +393,14 @@ backup and the live docs surfaced three real losses that no reviewer would have 
 1. **The per-file code maps had been compressed away.** 02-upstream-baseline's map of
    `lib/*.py` and 04-scoreforge-merge's `tab.py`/`pipeline.py` line anchors are precisely
    the working reference for the next job (wiring firmware to upstream). Restored in full
-   as two tables in [[provenance]].
+   as two tables in [provenance](docs/provenance.md).
 2. **`firmware/config/settings_overlay.json` had zero mentions** anywhere in the new docs
    — its only documentation was the deleted `firmware/README.md`. It is the file that
    carries the generated `shift`/`note_offsets` into the firmware. Documented in
-   [[firmware]], with the warning not to hand-edit it.
+   [firmware](docs/firmware.md), with the warning not to hand-edit it.
 3. **The ScoreForge archive's size and verification** (648 MB, 700 entries, CRC-verified,
    and the fact that the vendored copy has *no* git history) had been trimmed to a bare
-   path. Restored in [[README]] — that zip is not a redundant backup.
+   path. Restored in [README](README.md) — that zip is not a redundant backup.
 
 The remaining 63 absent tokens are all accounted for: superseded 164.1 mm-era geometry,
 stale test counts (113/95/68/20, now 189/121/68), the deleted notes' own filenames,
@@ -410,7 +410,7 @@ heading numbers, and tokenizer artifacts.
 on the worst-config audio realtime factor, 0.0131 vs 0.0124. Neither was wrong: four runs
 of the same configuration give 0.577–0.608 ms/frame, a ±5% spread from scheduling noise.
 The honest statement is a range, and the conclusion to quote is the **~76× headroom**, not
-the milliseconds. Corrected in [[firmware]].
+the milliseconds. Corrected in [firmware](docs/firmware.md).
 
 **Also corrected:** D-23's reversal condition still read "folding the compiler in would
 make it a derivative work" — a GPL-era phrase, void under MIT. Now states the real
@@ -427,7 +427,7 @@ reversal condition (a Pi that could run Audiveris).
   the agents. `docs/hardware.md` is therefore the one note whose author never completed
   its own fact-coverage audit — the orchestrator's audit above covers it instead.
 
-**Next:** unchanged — Pi integration, then the bar. See [[README]].
+**Next:** unchanged — Pi integration, then the bar. See [README](README.md).
 
 ---
 
@@ -472,7 +472,7 @@ python -m pytest firmware/tests score/tests -q -> 189 passed
 - **Flat on the shelf puts the LEDs level with the black keys.** The flat surface behind
   the key tails is at z 98.00 mm (40 779 mm² of it); the strip laid on it tops out at
   100.10 mm, which is −0.67 mm relative to the black-key tops and +9.39 mm relative to the
-  white ones. That is option A in [[hardware]] with its known shadow problem; the 10–15 mm
+  white ones. That is option A in [hardware](docs/hardware.md) with its known shadow problem; the 10–15 mm
   clearance option B wants needs the printed wedge.
 - **The strip CAD is not the design bar.** The file is a 1008 mm part, 144 LEDs at a
   nominal 7.000 mm pitch; the design is 176 LEDs at 6.9444 mm over 1222.21 mm. The sim
@@ -497,11 +497,11 @@ python -m pytest firmware/tests score/tests -q -> 189 passed
 - ASSUMED: that the flat 98.00 mm surface behind the key tails is the one the bar would be
   taped to — it is the largest flat top in the 30 mm band behind the tails, but nobody has
   put a strip on the real instrument. The 4 mm setback is a placeholder, not a measurement.
-- NOT CHECKED: the capacitive-touch clearance question ([[decisions]] D-09) — the sim knows
+- NOT CHECKED: the capacitive-touch clearance question ([decisions](docs/decisions.md) D-09) — the sim knows
   nothing about the touch panel, and placing the bar in it does not make it safe.
 
 **Next:** hinge the 88 key bodies so a played note moves its key; then decide option A vs. B
-for the bar height and re-render both. Pi integration ([[README]]) is unchanged and still
+for the bar height and re-render both. Pi integration ([README](README.md)) is unchanged and still
 the larger job.
 
 ---
@@ -550,7 +550,7 @@ python sim/preview.py --cue "C4:R:1,E4:R:2,G4:R:3,C3:L:5" -> 8 LED geoms lit of 
   `verify_scene.py` from the compiled cabinet mesh (49.09 mm both ways).
 - ASSUMED: that flush with the rim is where the bar should go. It is as far forward as the
   board allows, but no measurement on the real instrument backs it, and the capacitive
-  touch constraint ([[decisions]] D-09) is still unmodelled — the rim is exactly where the
+  touch constraint ([decisions](docs/decisions.md) D-09) is still unmodelled — the rim is exactly where the
   touch surface begins, so this position is the one most in need of a real-hardware check.
 
 **Next:** unchanged — hinge the key bodies; decide option A vs. B for bar height.
@@ -818,12 +818,12 @@ LEDs per key at sigma 3.5: 2 -> 23 keys, 3 -> 64, 4 -> 1 (C8)
 - VERIFIED: every figure above, computed this session; the sweep's assertions pass in
   weighted+diffuser mode across the notes tested, and the scene's 16 checks still pass.
 - ASSUMED: that a Gaussian of σ=3.5 mm is what this particular diffuser will do. It is
-  derived from the 6–10 mm gap in [[hardware]], not measured from the part Kevin bought;
+  derived from the 6–10 mm gap in [hardware](docs/hardware.md), not measured from the part Kevin bought;
   the real profile's scatter could be wider, narrower or non-Gaussian. Everything above is
   a *relative* comparison, which survives a wrong σ far better than any absolute claim.
 - NOT DECIDED (and not the sim's to decide): the map format would become
   `note -> [(led, weight)]`, which upstream's `shift`/`note_offsets` cannot express
-  ([[decisions]] D-08 territory); and the hand/finger two-pixel encoding has to be replaced,
+  ([decisions](docs/decisions.md) D-08 territory); and the hand/finger two-pixel encoding has to be replaced,
   because a blob cannot carry two roles.
 
 **Next:** Kevin's call on σ and on the two open decisions above; then, if it goes ahead, the
@@ -872,7 +872,7 @@ python -m pytest firmware/tests score/tests -q -> 189 passed
   the cap from 8 mm to 5 mm, which does narrow the blob — and leaves the summed field
   undulating by **39%**, i.e. you see the individual LEDs through the diffuser. Measuring
   the ripple killed that idea: continuity needs ≥ 7 mm, so the blob can only be narrowed
-  through the **band**, never through the gap. The 6–10 mm figure in [[hardware]] now has a
+  through the **band**, never through the gap. The 6–10 mm figure in [hardware](docs/hardware.md) now has a
   derivation behind it instead of a citation.
 - **The model was blurring twice.** Weights sampled from a blurred profile, then re-emitted
   as Gaussians, is `box ⊛ G ⊛ G`. Worth ~0.5 mm at σ=3.5 and more at larger σ, and wrong
@@ -913,24 +913,24 @@ python -m pytest firmware/tests score/tests -q -> 189 passed
 documents current and write the simulation into them.
 
 **Done**
-- New note **[[simulation]]** — Part 4 in the vault: what the scene contains, what it
+- New note **[simulation](docs/simulation.md)** — Part 4 in the vault: what the scene contains, what it
   measured about the instrument, what it caught, the continuous-mapping prototype and its
   numbers, and an explicit VERIFIED / ASSUMED / NOT MODELLED section. `sim/README.md` stays
   as the runnable reference and the two link to each other.
-- [[index]] now lists seven notes; [[README]] describes four parts and carries the sim's
+- [index](docs/index.md) now lists seven notes; [README](README.md) describes four parts and carries the sim's
   check line.
 - **Stale facts corrected**, all read from the artifacts rather than retyped:
   `strip origin -7.75 → +1.003 mm`, `worst centre err 3.4 → 3.45 mm`,
   `shift 0 → -2`, `note_offsets [[63,1]] → [[21,-1],[51,1],[96,1],[107,-1]]` in
-  [[hardware]] §2.1, [[firmware]]'s comparison table and [[README]]'s quick reference.
-- New [[hardware]] §2.1a explains why the tape is centred and what it cost; §3 now records
+  [hardware](docs/hardware.md) §2.1, [firmware](docs/firmware.md)'s comparison table and [README](README.md)'s quick reference.
+- New [hardware](docs/hardware.md) §2.1a explains why the tape is centred and what it cost; §3 now records
   the board's 21.32 mm overhang and where the bar actually sits; §5's 6–10 mm diffuser gap
   has a derivation (the ripple sweep) instead of a citation.
-- [[decisions]]: **D-25** (centred tape) and **D-26** (build a simulation) added; D-08's
+- [decisions](docs/decisions.md): **D-25** (centred tape) and **D-26** (build a simulation) added; D-08's
   parenthetical corrected; **Q-10** (map format becomes note → [(led, weight)]?), **Q-11**
   (how to encode hand and finger in one blob), **Q-12** (measure the real diffuser's blur)
   opened.
-- [[README]] "Your calls" gained the two decisions and the one measurement Kevin owns.
+- [README](README.md) "Your calls" gained the two decisions and the one measurement Kevin owns.
 
 **Evidence**
 ```
@@ -944,7 +944,7 @@ python sim/verify_scene.py -> 16 checks, 0 failed
   `firmware/config/settings_overlay.json`, `sim/assets/keymap.json` or `sim/lightfield.py`
   in this session — none was copied from an earlier draft or from memory.
 - ASSUMED: nothing new. The simulation's own assumptions (10 mm key travel, nominal key
-  masses, σ = 0.45 × gap) are now stated in [[simulation]] rather than only in the log.
+  masses, σ = 0.45 × gap) are now stated in [simulation](docs/simulation.md) rather than only in the log.
 
 **Next:** the app — what the hardware's key functions are, what features it should carry,
 and the touchscreen GUI. Discussion, not code, per Kevin.
@@ -961,23 +961,23 @@ input for instruments with no MIDI out; USB-MIDI from the piano as the real inpu
 app is a **web app**, not a native GUI.
 
 **Done — documents only, no code touched.**
-- [[decisions]]: **D-27** (platform), **D-28** (LED data moves to SPI0/GPIO10, driven by
+- [decisions](docs/decisions.md): **D-27** (platform), **D-28** (LED data moves to SPI0/GPIO10, driven by
   SPI-encoded bytes rather than `rpi_ws281x`), **D-29** (the mic is a backup, MIDI is the
   truth), **D-30** (kiosk web app). **Q-07 CLOSED** after being open since the first
   session. **D-10 struck through** — superseded by D-27/D-28. D-23 annotated: its reversal
   condition (a Pi that can host a JVM for Audiveris) is now reachable but **not acted on**.
-- [[hardware]]: new **§6.1a** on the Pi 5 LED-driver problem and the three paths; §6 retitled
+- [hardware](docs/hardware.md): new **§6.1a** on the Pi 5 LED-driver problem and the three paths; §6 retitled
   to the Pi 5 with the Zero 2 W analysis kept as the reason the pin is where it is; §6.2
   rewritten (one cable, no OTG adapter, no hub); §6.3 now separates what the Pi 5 changes
   from the Zero 2 W history; power table and supply line updated; **BOM re-costed
   ≈125–155 → ≈195–255 USD**; the wiring-diagram line now says the diagrams still show
   GPIO18 and need redrawing.
-- [[firmware]]: the "no `rpi_ws281x`" framing corrected; the unverified list rewritten — the
+- [firmware](docs/firmware.md): the "no `rpi_ws281x`" framing corrected; the unverified list rewritten — the
   USB MIDI adapter is now the *primary* path, BLE drops to optional, and the audio
   benchmark is noted as assuming a line-in rather than this mic.
-- [[provenance]]: `rpi_ws281x` strip driver and the LCD menu marked **DROPPED** with reasons;
+- [provenance](docs/provenance.md): `rpi_ws281x` strip driver and the LCD menu marked **DROPPED** with reasons;
   the Flask row now says the app is ours and upstream's routes are a starting point.
-- [[README]]: four parts line, quick-reference rows (controller, LED pin, inputs, BOM), and
+- [README](README.md): four parts line, quick-reference rows (controller, LED pin, inputs, BOM), and
   the "written but unverified" paragraph now leads with the new unknown.
 
 **Evidence**
@@ -1006,7 +1006,7 @@ python sim/verify_scene.py -> 16 checks, 0 failed
 **Verified vs. assumed**
 - VERIFIED: the vault is consistent (0 broken links, 14/14 reachable); tests and sim checks
   still pass; every superseded value was struck through rather than deleted.
-- **ASSUMED, and flagged as such in [[hardware]] §6.1a:** that `rpi_ws281x` fails on a Pi 5
+- **ASSUMED, and flagged as such in [hardware](docs/hardware.md) §6.1a:** that `rpi_ws281x` fails on a Pi 5
   and that the SPI path works there. Both are *reported*, neither measured on Kevin's board.
   The first bench task when the Pi 5 arrives is 176 LEDs over SPI, watching for flicker and
   for the far end lagging. Fallback order: RP1 PIO, then a Pico.
@@ -1026,10 +1026,10 @@ the firmware can actually serve today.
   checked: **Play**, **Library**, **Session**, **Settings**. No CDN, no webfont, no
   framework; the Pi will sometimes be offline beside the piano. Renders committed as
   `app/ui/shot_*.png`.
-- New vault note **[[app]]** (Part 5): the rule the design follows, what 800x480 on a 5"
+- New vault note **[app](docs/app.md)** (Part 5): the rule the design follows, what 800x480 on a 5"
   panel actually affords, the four screens, the flow between them, and a table of what the
   firmware can already serve.
-- [[index]] and [[README]] updated: eight notes, five parts, `app/ui/` in the layout.
+- [index](docs/index.md) and [README](README.md) updated: eight notes, five parts, `app/ui/` in the layout.
 
 **Evidence**
 ```
@@ -1076,10 +1076,10 @@ come from the compiler or from the app.
 the code for that, not new design.
 
 **Done**
-- **[[build]]** — the runbook: 176 LEDs, data on GPIO10, and six stages where every step
+- **[build](docs/build.md)** — the runbook: 176 LEDs, data on GPIO10, and six stages where every step
   has a test and a pass criterion, plus a symptom table (nothing lights / first LED only /
   red shows green / wrong count / far end pink) that maps each failure to its cause.
-  Routed from [[index]] and [[README]] so build day starts in one place.
+  Routed from [index](docs/index.md) and [README](README.md) so build day starts in one place.
 - `tools/hw/ws2812_spi.py` — the Pi 5 LED driver: WS2812 bits as 4 SPI bits at 3.2 MHz
   (`1000` / `1110`), GRB order, brightness, a 60 us latch. `--selftest` checks the encoder
   against hand-derived byte patterns **with no hardware**.
@@ -1140,10 +1140,10 @@ Q-12 and turns the simulation's blur coefficient from an assumption into a measu
   that drives `PracticeSession` from MIDI / mic / on-screen keys and pushes every frame to
   the LED sink, and the four screens as one vanilla-JS page that scales from 800×480 to any
   panel. Library, Play, Session and Settings all work; loops, play-along, tempo and attempt
-  history live in the engine, not the state machine — [[app]] §5 update, §7.
+  history live in the engine, not the state machine — [app](docs/app.md) §5 update, §7.
 - **PC preview** at `/preview`: the live app in an 800×480 frame plus the 176-LED bar and
   88 keys drawn to scale from `data/led_map.json`, playable by mouse or computer keyboard.
-- **[[pi-setup]]**: Imager → first boot → either panel → copy code → `setup_pi.sh` →
+- **[pi-setup](docs/pi-setup.md)**: Imager → first boot → either panel → copy code → `setup_pi.sh` →
   `install_app.sh` (systemd service + labwc kiosk) → scores → troubleshooting.
 - `tools/compile_score.py`: MusicXML/.mxl → light-score, validated by the firmware reader.
 - Firmware: `PracticeSession.seek()` (+1 test) and `midi.pick_input_port()` (+1 test).
@@ -1167,9 +1167,9 @@ bash -n + dry runs: setup_pi.sh, install_app.sh, kiosk.sh
   listed first, so `UsbMidiBackend()` and `midi_test.py watch` would have connected to a
   port nothing plays into. Both now skip it.
 - **The official 5" Touch Display 2 is 720×1280 portrait**, not 800×480; the BOM row does
-  not name a model. The app now scales instead of assuming the panel, and [[pi-setup]] §0
+  not name a model. The app now scales instead of assuming the panel, and [pi-setup](docs/pi-setup.md) §0
   covers both kinds.
-- The mockups' 36 px tabs broke [[app]] §2's own 52 px floor; the live app uses 52 px. Two
+- The mockups' 36 px tabs broke [app](docs/app.md) §2's own 52 px floor; the live app uses 52 px. Two
   layout probes earned their keep: the overflow probe caught an 859 px-wide Play screen,
   and the request counter showed a "Play" render that was really the Library (hash-only
   navigation, no `hashchange` handler).
@@ -1181,7 +1181,7 @@ bash -n + dry runs: setup_pi.sh, install_app.sh, kiosk.sh
   whether a user autostart replaces the system one — the installer seeds it to be safe),
   kiosk Chromium, MIDI from the PX-S1100, the mic, and SPI to the strip.
 
-**Next:** flash the card ([[pi-setup]]), then the bench ([[build]] §3).
+**Next:** flash the card ([pi-setup](docs/pi-setup.md)), then the bench ([build](docs/build.md) §3).
 
 ---
 
@@ -1196,16 +1196,16 @@ will live in its own repo and connect later.
   with yes/no questions, then all 88 keys lit through the real map as they are played.
   Reports dead / stuck / out-of-range keys, velocity range, whether the pedal arrived and
   the Pi-side note → LED time; writes `~/.fingerlight/smoke-report.json` and a block for
-  this log. [[build]] "The short route".
+  this log. [build](docs/build.md) "The short route".
 - **Objective 1 — Free play** (`firmware/src/fingerlight/freeplay.py`, new tab): the bar
   lights whatever is played whenever no attempt is live. Styles solid / split / rainbow /
-  velocity, ten swatches, split key, release fade, sustain pedal hold. [[app]] §9.
+  velocity, ten swatches, split key, release fade, sustain pedal hold. [app](docs/app.md) §9.
 - **Sustain pedal**: `MidiDecoder(pedal=True)` emits `PedalEvent` edges for CC 64; the
   default decoder is unchanged, and practice still ignores the pedal.
 - **Objective 2 — per-key calibration** (Settings → *Calibrate keys…*): select a key by
   playing it, nudge its pair one LED at a time, shift all, reset; *Save as default* writes
   `~/.fingerlight/led_offsets.json`, loaded on every start. Applied in `note_to_leds` on top
-  of the unchanged upstream formula. [[app]] §9.
+  of the unchanged upstream formula. [app](docs/app.md) §9.
 
 **Evidence**
 ```
@@ -1236,6 +1236,28 @@ Chromium at 800x480: Free play (4 styles, with/without a score open), Settings, 
 
 **Next:** run `tools/hw/smoke.py` on the Pi and paste its block here; calibrate; then
 objective 3 (play a song from the Pi through the piano) once ScoreForge emits MIDI.
+
+---
+
+## 2026-10-29 — Doc links work on GitHub
+
+**Done**
+- Every Obsidian `[[wikilink]]` in the docs (224 across 12 files) is now a relative
+  Markdown link, `[hardware](docs/hardware.md)`. GitHub rendered the wikilinks as literal
+  `[[hardware]]` text, so no cross-reference in the repo was clickable there. Old note names
+  that are now aliases (`[HANDOFF]`, `[01-mechanical-and-hardware-survey]`, …) keep their
+  wording in this log and point to the notes they were merged into.
+- `tools/check_vault.py` now checks relative links (to notes and to files), and fails on
+  any wikilink left outside code, as well as on broken links and unreachable notes.
+- `.obsidian/app.json`: new links are written as relative Markdown links, not wikilinks.
+
+**Evidence**
+```
+python tools/check_vault.py -> 17 notes, 252 relative links, 0 broken, 0 wikilinks,
+  17/17 reachable; a planted [x](nope.md) and [[hardware]] each fail it (exit 1)
+```
+
+**Next:** unchanged — the smoke run on the Pi.
 
 ---
 

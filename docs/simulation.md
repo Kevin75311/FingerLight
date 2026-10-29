@@ -14,7 +14,7 @@ end before the bar is built, and so the note→LED map can be checked against th
 instrument's own geometry instead of against a spreadsheet.
 
 Runnable detail — flags, file layout, how to regenerate — lives in
-[[sim/README|the sim README]]. This note is what the rest of the vault needs to know.
+[the sim README](../sim/README.md). This note is what the rest of the vault needs to know.
 
 ```
 python sim/build_assets.py --part piano     # STEP -> STL, ~25 s
@@ -56,7 +56,7 @@ All from the CAD replica, printed by `make_scene.py` / `verify_scene.py`:
 | Bar laid against the rim | y 49.09 … 61.03 mm, top z 100.10 mm | −0.67 mm vs black-key tops |
 | Clearance under the bar | +9.85 mm | tallest thing under it is D3's rear ramp |
 
-Three things worth carrying into [[hardware]]:
+Three things worth carrying into [hardware](hardware.md):
 
 1. **The board overhangs the key tails by 21.32 mm** — the keys run *under* it, so the bar
    is anchored on the board's front rim, not on the tails. Anchoring on the tails parked it
@@ -66,7 +66,7 @@ Three things worth carrying into [[hardware]]:
    0.25, 0.05 and 0.01 mm, so it is in the CAD, not the mesh. The instrument (M1), not the
    replica, remains the authority.
 3. **Flat on the board puts the LEDs level with the black keys** (−0.67 mm) — that is
-   option A in [[hardware]] §3 with its known shadow problem. The diffuser channel raises
+   option A in [hardware](hardware.md) §3 with its known shadow problem. The diffuser channel raises
    the lit surface to 7.83 mm above the black keys, which is option B territory without the
    printed wedge.
 
@@ -74,10 +74,10 @@ Three things worth carrying into [[hardware]]:
 
 - **The tape was visibly off-centre.** `gen_map.py` chose its origin to minimise worst-case
   centring error, which left 9.76 mm bare at the top end. The map was regenerated centred;
-  see [[hardware]] §2.1a. Cost: 0.05 mm of worst-case error.
+  see [hardware](hardware.md) §2.1a. Cost: 0.05 mm of worst-case error.
 - **A sign bug in `gen_map.py`'s PLV translation** (`shift = -d(21)`, it returned `+d(21)`),
   invisible for every map the tool had ever produced because they all had `shift = 0`.
-  Surfaced the moment a centred map needed a non-zero shift — [[log]] 2026-09-21.
+  Surfaced the moment a centred map needed a non-zero shift — [log](../log.md) 2026-09-21.
 - **The LED-to-key offset splits in two**, and `verify_scene.py` reports the halves
   separately: the map's own quantisation, and this CAD replica's geometry differing from
   the M1 model (−4.48 … +0.46 mm). Nothing in the map should be changed off the second.
@@ -101,13 +101,13 @@ falls inside that band; the diffuser blurs the result once. Measured at a 7 mm g
 **The gap is set by continuity, not taste.** Driving every LED equally and measuring how
 much the summed field still undulates: 4 mm → 69 %, 5 mm → 39 %, 6 mm → 12 %, 7 mm → 0.0 %.
 Below ~7 mm the dots show through the diffuser, which is the same conclusion as the 6–10 mm
-recommendation in [[hardware]] §5, reached from the geometry. The blob therefore cannot be
+recommendation in [hardware](hardware.md) §5, reached from the geometry. The blob therefore cannot be
 narrowed by lowering the cap — only by narrowing the band.
 
 Known limit: **adjacent semitones merge** (11.3 mm FWHM against a 13.73 mm slot pitch).
 Different finger colours keep them apart; a single colour does not.
 
-Open before any of it ships, both in [[decisions]]: the map format would become
+Open before any of it ships, both in [decisions](decisions.md): the map format would become
 `note → [(led, weight)]`, which upstream's `shift`/`note_offsets` cannot express (Q-10),
 and the hand/finger two-pixel encoding has to be replaced because a blob cannot carry two
 roles (Q-11). The blur coefficient itself is unmeasured (Q-12).
@@ -123,10 +123,10 @@ roles (Q-11). The blur coefficient itself is unmeasured (Q-12).
   plausible piano-action figures, not measurements of this instrument; key masses are
   nominal; `σ = 0.45 × gap` is a modelling coefficient, not the real profile's scatter.
 - **NOT MODELLED**: light transport (the diffuser's glow is computed, not ray-traced), the
-  capacitive touch panel ([[decisions]] D-09), and anything electrical.
+  capacitive touch panel ([decisions](decisions.md) D-09), and anything electrical.
 
 ## See also
 
-[[index]] · [[hardware]] for the geometry it measures against · [[firmware]] for the
-functions it drives · [[decisions]] for what it left open · [[log]] 2026-09-21 for the
-session trail · [[sim/README|sim/README.md]] for flags and file layout.
+[index](index.md) · [hardware](hardware.md) for the geometry it measures against · [firmware](firmware.md) for the
+functions it drives · [decisions](decisions.md) for what it left open · [log](../log.md) 2026-09-21 for the
+session trail · [sim/README.md](../sim/README.md) for flags and file layout.

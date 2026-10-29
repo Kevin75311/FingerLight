@@ -74,7 +74,7 @@ All 88 notes still get a distinct primary LED.
 
 `gen_map.py` originally chose the origin that minimises worst-case centring error, which
 put the tape **7.75 mm left of A0** and left **9.76 mm bare at the top end** — visibly
-off-centre once the bar was rendered against the instrument ([[simulation]]). Centring it
+off-centre once the bar was rendered against the instrument ([simulation](simulation.md)). Centring it
 instead costs **0.05 mm** of worst-case error (3.40 → 3.45 mm) and keeps 88/88 unique
 LEDs, so the tape is now centred: `--origin centre`, +1.003 mm from A0's left edge, 1.0 mm
 of margin at each end. 176 LEDs is the most that fit; 177 would overhang by 2.95 mm.
@@ -84,7 +84,7 @@ sliding the tape a whole 6.9444 mm only renumbers LEDs and is absorbed by `shift
 0.05 mm above is the cost of the *sub-pitch* part of the move. And the regeneration
 exposed a sign bug in `gen_map.py`'s PLV translation (`shift = -d(21)`, it returned
 `+d(21)`), invisible for every map the tool had produced before because they all had
-`shift = 0`; the firmware's own range assertion caught it — [[log]] 2026-09-21.
+`shift = 0`; the firmware's own range assertion caught it — [log](../log.md) 2026-09-21.
 
 To regenerate from a better measurement: `python tools/gen_map.py <M1>`, then update
 `octave_span_mm`, `shift` and `note_offsets` in `firmware/config/settings_overlay.json`.
@@ -158,7 +158,7 @@ Three mount options, picked by clear panel depth (M3):
 | B. Printed low wedge, profile tilted 15–20° forward | M3 ≥ 12 mm, want light *on* keytops | +8–10 mm height, two printed end wedges |
 | C. Printed standoff rail bridging the touch row | M3 too shallow | best optics, keeps every button reachable; needs a 1.2 m rail or three spaced feet, must clear the music-stand slot |
 
-**Measured against the CAD in [[simulation]] (2026-09-21):** the top board's front rim is 21.32 mm *in front of* the key tails — the keys run under it — so the bar is anchored on that rim, not on the tails. Laid flat there the bare tape tops out 0.67 mm *below* the black keys (option A, with its shadow problem); the diffuser channel puts the lit surface 7.83 mm above them. Clearance under the bar is +9.85 mm.
+**Measured against the CAD in [simulation](simulation.md) (2026-09-21):** the top board's front rim is 21.32 mm *in front of* the key tails — the keys run under it — so the bar is anchored on that rim, not on the tails. Laid flat there the bare tape tops out 0.67 mm *below* the black keys (option A, with its shadow problem); the diffuser channel puts the lit surface 7.83 mm above them. Clearance under the bar is +9.85 mm.
 
 Target bar height: **10–15 mm above the black-key tops** so a lit black key isn't
 occluded by neighbours.
@@ -169,7 +169,7 @@ occluded by neighbours.
 |---|---|---|---|
 | **M1** | Octave span (C1→C8 ÷ 7, or 5 octaves ÷ 5) | **164.8 mm** | **measured**, 2026-09-15 (§2.1) |
 | M2 | A0 left edge → C8 right edge | 1219 mm (at old assumption) | dropped — mechanical out of software scope |
-| **M3** | Clear panel depth (key tails → touch-button row) | **≈150 mm** | recorded, not tracked — comfortably over the 12 mm option-A threshold, so nothing about the LED bar is depth-constrained. See [[decisions]] D-09 for the capacitive-touch constraint that motivated it |
+| **M3** | Clear panel depth (key tails → touch-button row) | **≈150 mm** | recorded, not tracked — comfortably over the 12 mm option-A threshold, so nothing about the LED bar is depth-constrained. See [decisions](decisions.md) D-09 for the capacitive-touch constraint that motivated it |
 | M4 | Panel height above white keytop surface | — | dropped |
 | M5 | Black-key top height above white-key top | 10–12.5 mm | dropped |
 | M6 | Touch-button row horizontal extent + end gaps | — | dropped |
@@ -244,7 +244,7 @@ Bare 144/m WS2812B behind a piano is a row of painful point sources. Required:
   cut to 1230 mm. Silicone preferred on this instrument (§3, capacitive touch row).
 - Diffuser–LED gap of 6–10 mm gives clean per-key blobs at 6.9 mm pitch without smearing
   adjacent keys. Under ~4 mm still shows dots; over ~12 mm bleeds into neighbours.
-  **Now derived, not cited** ([[simulation]]): driving every LED equally and measuring how much the summed field undulates gives 69% ripple at a 4 mm gap, 39% at 5 mm, 12% at 6 mm and 0.0% at 7 mm. The lit width therefore cannot be narrowed by lowering the cap — below ~7 mm it stops being a stripe.
+  **Now derived, not cited** ([simulation](simulation.md)): driving every LED equally and measuring how much the summed field undulates gives 69% ripple at a 4 mm gap, 39% at 5 mm, 12% at 6 mm and 0.0% at 7 mm. The lit width therefore cannot be narrowed by lowering the cap — below ~7 mm it stops being a stripe.
 - **Black keys read ~40% dimmer** than white under the same LED (matte black vs.
   ivory-textured white). Firmware needs a per-key-type gain, budget **1.4–1.7×** on
   black keys (implemented as `BLACK_KEY_GAIN` in `firmware/src/fingerlight/colors.py` —
@@ -311,7 +311,7 @@ Deliberately no pure blue — dimmest channel per unit drive, dies on matte blac
 
 The 3 keys that are 1-LED-wide (§4.2) fall back to finger-only; the 1 key that gets 3
 LEDs shows hand-finger-hand. Three palette candidates exist in firmware (a taste call,
-pick by looking at the bar) — see [[firmware]].
+pick by looking at the bar) — see [firmware](firmware.md).
 
 This is new work: Piano-LED-Visualizer only colours by hand (`hand_colorR`/`hand_colorL`
 in `lib/learnmidi.py`), never by finger, and carries no fingering data.
@@ -394,7 +394,7 @@ The Pi 5 (4×A76 @ 2.4 GHz, 4–8 GB) removes both of the Zero 2 W's hard limits
   moving parts for an import step nobody runs mid-session — so this stays **open**, noted,
   not acted on.
 - **Score-informed audio verification stops being tight.** The benchmark that had ~76×
-  headroom on a *PC* and was only extrapolated to a Zero 2 W ([[firmware]] §B6) is no longer
+  headroom on a *PC* and was only extrapolated to a Zero 2 W ([firmware](firmware.md) §B6) is no longer
   a risk item on this platform.
 
 **Zero 2 W (historical):** 4×A53 @ 1 GHz, 512 MB. Two workloads did not fit:
@@ -481,11 +481,11 @@ injection.
   `firmware/src/fingerlight/colors.py`. Needs measuring on the built bar, then correcting
   in that one place.
 - **Finger-colour palette** (§5): a taste call, three candidates implemented — pick by
-  looking at the bar. See [[firmware]].
+  looking at the bar. See [firmware](firmware.md).
 - **M1 re-check**: current 164.8 mm is measured-once; worth re-measuring once the bar is
   physically aligned (§2.1).
 - **Black-key geometry** (§2.2): width 9.5–11 mm and rise 10–12.5 mm above white-key
   surface remain ASSUMED, not directly measured.
 
-Entrance: [[index]] · related: [[decisions]] · [[log]] · [[firmware]] · [[score]] ·
-[[provenance]]
+Entrance: [index](index.md) · related: [decisions](decisions.md) · [log](../log.md) · [firmware](firmware.md) · [score](score.md) ·
+[provenance](provenance.md)
