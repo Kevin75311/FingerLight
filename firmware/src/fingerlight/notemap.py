@@ -23,7 +23,7 @@ from __future__ import annotations
 import csv
 import json
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Iterable, Sequence
 
 # The 88-key range, A0..C8.  Anything outside cannot be shown on the bar.
@@ -56,6 +56,13 @@ class StripSettings:
     # Provenance -- the measurement this mapping was generated from.
     octave_span_mm: float = 164.8
 
+    #: Per-key corrections from the calibration screen, as sorted (midi, leds) pairs:
+    #: how many LEDs to move that key's pair, + toward C8.  Not an upstream setting --
+    #: it is applied in `note_to_leds`, on top of upstream's formula, so
+    #: `get_note_position` stays verbatim and `verify_against_map` still checks the
+    #: generated map rather than the hand corrections.
+    led_offsets: tuple[tuple[int, int], ...] = ()
+
     @classmethod
     def load(cls, path: str = DEFAULT_SETTINGS) -> "StripSettings":
         with open(path, encoding="utf-8") as fh:
@@ -68,6 +75,17 @@ class StripSettings:
             reverse=bool(raw.get("reverse", False)),
             octave_span_mm=float(raw.get("octave_span_mm", 0.0)),
         )
+
+    def with_offsets(self, offsets: dict[int, int]) -> "StripSettings":
+        """A copy carrying these per-key corrections (zeros dropped)."""
+        pairs = tuple(sorted((int(n), int(d)) for n, d in offsets.items() if int(d)))
+        return replace(self, led_offsets=pairs)
+
+    def offset_for(self, note: int) -> int:
+        for n, d in self.led_offsets:
+            if n == note:
+                return d
+        return 0
 
 
 def get_note_position(note: int, s: StripSettings) -> int:
@@ -98,9 +116,10 @@ def note_to_leds(note: int, s: StripSettings) -> tuple[int, int]:
     right pixel carries the finger hue.
 
     The pair is clamped into the strip so the top and bottom keys, whose key widths are
-    irregular, can never index off the end.
+    irregular, can never index off the end.  A per-key calibration offset
+    (`StripSettings.led_offsets`) moves the pair before the clamp.
     """
-    primary = get_note_position(note, s)
+    primary = get_note_position(note, s) + s.offset_for(note)
     lo = max(0, min(primary, s.led_count - 1))
     hi = max(0, min(primary + 1, s.led_count - 1))
     return lo, hi

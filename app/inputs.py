@@ -19,7 +19,8 @@ try:
 except ImportError:
     mido = None  # type: ignore
 
-from fingerlight.midi import MidiIngest, UsbMidiBackend, pick_input_port
+from fingerlight.midi import MidiDecoder, MidiIngest, PedalEvent, UsbMidiBackend
+from fingerlight.midi import pick_input_port
 
 #: How often to look for a piano that is not there yet, or has gone away.
 RESCAN_S = 2.0
@@ -51,7 +52,7 @@ class MidiThread(threading.Thread):
                         eng.set_input_status("midi", "absent", "no MIDI device -- piano off or unplugged?")
                         continue
                     backend = UsbMidiBackend(port)
-                    ingest = MidiIngest([backend])
+                    ingest = MidiIngest([backend], MidiDecoder(pedal=True))
                     eng.set_input_status("midi", "live", port)
                 except Exception as exc:
                     eng.set_input_status("midi", "absent", str(exc))
@@ -64,12 +65,16 @@ class MidiThread(threading.Thread):
                 if port not in mido.get_input_names():
                     for ev in ingest._tracker.release_all():
                         eng.note(ev.pitch, False, "midi")
+                    eng.pedal(False)
                     backend.close()
                     ingest = None
                     eng.set_input_status("midi", "absent", "piano disconnected")
                     continue
             for ev in ingest.poll():
-                eng.note(ev.pitch, ev.on, "midi")
+                if isinstance(ev, PedalEvent):
+                    eng.pedal(ev.down)
+                else:
+                    eng.note(ev.pitch, ev.on, "midi", ev.velocity)
             time.sleep(0.002)
         if backend is not None:
             backend.close()

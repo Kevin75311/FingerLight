@@ -167,3 +167,27 @@ def test_settings_xml_fragment_roundtrips(settings):
     xml = to_upstream_settings_xml(settings)
     assert "<note_offsets>[[21, -1], [51, 1], [96, 1], [107, -1]]</note_offsets>" in xml
     assert "<led_count>176</led_count>" in xml
+
+
+# ------------------------------------------------------- per-key calibration offsets
+
+
+def test_offsets_move_one_key_and_leave_the_rest_and_upstream_alone():
+    s = StripSettings.load()
+    moved = s.with_offsets({60: 2, 61: 0, 62: -1})
+    assert moved.led_offsets == ((60, 2), (62, -1))      # zeros dropped, sorted
+    lo, hi = note_to_leds(60, s)
+    assert note_to_leds(60, moved) == (lo + 2, hi + 2)
+    assert note_to_leds(62, moved)[0] == note_to_leds(62, s)[0] - 1
+    for n in range(MIDI_MIN, MIDI_MAX + 1):
+        if n not in (60, 62):
+            assert note_to_leds(n, moved) == note_to_leds(n, s)
+        # upstream's formula is untouched, so the D-08 check still checks the map
+        assert get_note_position(n, moved) == get_note_position(n, s)
+    assert verify_against_map(moved).ok
+
+
+def test_an_offset_past_the_end_is_still_clamped_onto_the_strip():
+    s = StripSettings.load().with_offsets({108: 5, 21: -5})
+    assert note_to_leds(108, s) == (s.led_count - 1, s.led_count - 1)
+    assert note_to_leds(21, s)[0] == 0

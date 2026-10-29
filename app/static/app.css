@@ -284,3 +284,51 @@ button:disabled { opacity: .35; cursor: default; }
 .meter .v.small { white-space: nowrap; }
 .cue { grid-template-columns: minmax(0, 1fr) 260px; }
 .next { overflow: hidden; white-space: nowrap; }
+
+/* ------------------------------------------------------------ free play */
+.banner { display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 16px;
+          border-color: var(--warn); color: var(--warn); font-size: 14px; font-weight: 600; }
+.banner span { flex: 1; }
+.fpnow { padding: 10px 16px; display: grid; gap: 6px; }
+.fpnow .label { display: flex; justify-content: space-between; align-items: center;
+                color: var(--dim); font-size: 13px; font-weight: 600; letter-spacing: .6px; }
+.fpnow .chips { min-height: 56px; flex-wrap: nowrap; overflow: hidden; }
+.chip.fp { height: 56px; min-width: 64px; font-size: 22px; background: var(--accent); }
+.fp-idle { color: var(--dim); font-size: 18px; }
+.fsws { display: flex; gap: 6px; }
+.fsw { width: 48px; height: var(--tap-min); border-radius: 10px; border: 3px solid transparent; padding: 0; }
+.fsw.on { border-color: #fff; box-shadow: 0 0 0 2px var(--bg) inset; }
+.seg.side button { display: inline-flex; align-items: center; gap: 8px; min-width: 96px; }
+.seg.side i { width: 14px; height: 14px; border-radius: 4px; }
+.ramp { height: var(--tap-min); border-radius: 10px; display: flex; align-items: center; padding: 0 14px;
+        color: #10141c; font-size: 13px; font-weight: 700; }
+.ramp span { background: rgba(255,255,255,.75); padding: 2px 8px; border-radius: 6px; }
+.ramp.rainbow { background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #c000ff); }
+.ramp.velocity { background: linear-gradient(90deg, #00503f, #00c8a0, #ff9600, #ff1400); }
+
+/* ------------------------------------------------------------ calibrate */
+.calmain { display: grid; grid-template-columns: 200px 1fr; gap: 12px; padding: 10px 14px; align-items: center; }
+.calnote .big { font-size: 46px; }
+.calnote .info { margin-top: 4px; }
+.caloff { margin-top: 4px; font-size: 14px; font-weight: 700; color: var(--dim); }
+.caloff.moved { color: var(--warn); }
+.calbtns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.calbtns .btn { padding: 0 8px; }
+.calbtns .reset { grid-column: 2 / span 2; }
+.hint { color: var(--dim); font-size: 13px; padding: 0 4px; }
+.hint b { color: var(--text); }
+.kbmap { padding: 8px 10px; display: grid; gap: 6px; }
+/* 88 cells: an overview to tap, not the main way to choose (that is the piano itself) */
+.kcs { display: flex; gap: 1px; height: 40px; }
+.kc { flex: 1; min-width: 0; border: 0; padding: 0; border-radius: 2px; background: #c9ccd3; }
+.kc.b { background: #3a404d; height: 26px; }
+.kc.seen { background: #6fae94; }
+.kc.b.seen { background: #2f6a55; }
+.kc.moved { background: var(--warn); }
+.kc.sel { background: #fff; box-shadow: 0 0 0 2px var(--accent); }
+.fsws { flex: 1; min-width: 0; }
+.fsw { flex: 1; min-width: 0; width: auto; }
+.fpnow .chips { min-height: 48px; }
+.chip.fp { height: 48px; font-size: 20px; }
+.fprows .srow { height: 60px; }
+.fprows .seg button { padding: 0 12px; }

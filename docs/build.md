@@ -31,6 +31,27 @@ one is the assumption the next one rests on.
 | flashing the Pi, the panel, the kiosk | [[pi-setup]] |
 | what happened, session by session | [[log]] |
 
+## The short route: one smoke run
+
+Once the bar is wired and on the piano, one guided run covers §1–§4 in about five minutes
+and leaves a report:
+
+```
+sudo systemctl stop fingerlight          # the app holds SPI and the MIDI port
+python3 tools/hw/smoke.py                # preflight, 3 strip patterns, all 88 keys
+sudo systemctl start fingerlight
+```
+
+It asks yes/no after each strip pattern, then lights every key you play through the real
+map until all 88 have been heard. **Pass:** every step PASS — no dead key, no stuck key, no
+out-of-range note. It also reports the velocity range, whether the sustain pedal arrived,
+and the Pi-side note → LED time. Paste its closing block into [[log]]; the full result is
+in `~/.fingerlight/smoke-report.json`. Then fix any off-centre keys on the touchscreen:
+Settings → *Calibrate keys…* ([[app]] §9).
+
+The numbered sections below are the same ground one step at a time, for when the smoke
+run fails and you need to know where.
+
 ## 0. Before you open a box
 
 ```
@@ -115,6 +136,9 @@ python3 tools/hw/led_test.py sweep --ms 40
 A0 to C8 without drifting. The design's worst-case centring error is **3.45 mm**, about
 15 % of a white key — drift that grows toward one end is an alignment or an M1 problem,
 not quantisation. [[hardware]] §2.1a, §4.3.
+
+Keys that are off by a constant LED or two are fixed on the touchscreen, per key, and
+saved as the default: Settings → *Calibrate keys…* ([[app]] §9).
 
 ## 5. Once it works
 

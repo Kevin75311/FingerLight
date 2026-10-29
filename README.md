@@ -20,21 +20,22 @@ What comes from there, what comes from ScoreForge, and what is new: [[provenance
 
 | Part | State |
 |---|---|
-| **1 · Hardware** — geometry, LEDs, power, wiring, BOM | Designed. **Not built.** [[hardware]] |
-| **2 · Firmware** — note map, colour, practice, calibration, MIDI, audio | Logic complete; wired into the app's main loop (LEDs, MIDI, mic). **Never run on a Pi.** [[firmware]] |
+| **1 · Hardware** — geometry, LEDs, power, wiring, BOM | **Built**, preliminary setup done (Kevin, 2026-10-29). Smoke gate `tools/hw/smoke.py` not yet run. [[hardware]] |
+| **2 · Firmware** — note map, colour, practice, free play, calibration, MIDI (+ sustain pedal), audio | Logic complete; wired into the app's main loop (LEDs, MIDI, mic). [[firmware]] |
 | **3 · Score compiler** — MusicXML/OMR → hands → fingering → light score | Complete. [[score]] |
 | **4 · Simulation** — piano + bar in MuJoCo, lit by the firmware | Keys hinged, bar diffused, 16/16 checks. [[simulation]] |
-| **5 · App** — touchscreen UI on the Pi 5's 5" panel | Four screens built and wired to the state machine; PC preview with a simulated bar; kiosk install scripted. **Never run on a Pi.** [[app]], [[pi-setup]] |
+| **5 · App** — touchscreen UI on the Pi 5's 5" panel | Library, Play, Session, **Free play**, Settings and **per-key Calibrate**, wired to the state machine; PC preview with a simulated bar; kiosk install scripted. [[app]], [[pi-setup]] |
 
 ```
-python -m pytest firmware/tests score/tests app/tests -q
-                                                  ->  218 passed  (123 firmware, 68 score, 27 app)
+python -m pytest firmware/tests score/tests app/tests tools/tests -q
+                                ->  261 passed  (143 firmware, 68 score, 45 app, 5 tools)
+python tools/hw/smoke.py                          ->  the build-day gate, on the Pi
 python tools/check_vault.py                       ->  17 notes, 0 broken links
 python sim/verify_scene.py                        ->  16 checks, 0 failed
 python app/server.py --preview                    ->  http://127.0.0.1:8080/preview
 ```
 
-All 218 tests run on a PC with no Pi, no LED strip, no piano and no MIDI interface. As of
+All 261 tests run on a PC with no Pi, no LED strip, no piano and no MIDI interface. As of
 2026-09-30 the modules *are* wired together — `app/` is the main loop: SPI LED output
 through the bench-tested encoder, a MIDI thread, a mic thread and the touchscreen UI — but
 none of that wiring has met a Pi 5 yet. The SPI path itself is still the first bench task
@@ -46,8 +47,8 @@ none of that wiring has met a Pi 5 yet. The SPI path itself is still the first b
    through the real firmware path. Taste, not engineering.
 2. **CAD file** for the mechanical build — you own the mechanical side. [[hardware]]
 3. **`git init`?** Still undecided. Box has already fought one `.git` directory here.
-4. **Sustain pedal?** MIDI ingest drops CC 64 today because the practice state machine has
-   no pedal concept. Say if it should.
+4. **Sustain pedal in practice?** Free play now honours CC 64 (a released key stays lit
+   under the pedal). The practice state machine still ignores it. Say if it should.
 5. **Install Audiveris** if you want the PDF/photo input path — that code is written but
    its subprocess call has never run against a real binary.
 6. **Photograph one lit key** through the diffuser once the bar exists. The simulation
@@ -93,7 +94,8 @@ scoreforge/          ScoreForge, vendored, piano path only — not wired in
 
 tools/gen_map.py     python tools/gen_map.py <octave_span_mm> [--origin centre]
 tools/compile_score.py   MusicXML/.mxl -> light-score, validated by the Pi's own reader
-tools/hw/            build-day tests: preflight, ws2812_spi, led_test, midi_test, mic_test, setup_pi.sh
+tools/hw/            build-day tests: smoke (the one-run gate), preflight, ws2812_spi, led_test,
+                     midi_test, mic_test, setup_pi.sh
 tools/preview_bar.py renders the bar to HTML so palettes can be judged
 tools/bench_audio.py audio-verification benchmark
 tools/check_vault.py wikilink checker for docs/

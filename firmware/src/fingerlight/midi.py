@@ -34,7 +34,7 @@ from typing import Callable, Protocol, Sequence
 MIDI_MIN = 21
 MIDI_MAX = 108
 
-#: Control Change number practice.py would need if it ever grew pedal awareness.
+#: Control Change number of the sustain (damper) pedal.  Values >= 64 mean "down".
 CC_SUSTAIN = 64
 
 
@@ -64,6 +64,20 @@ class NoteEvent:
     pitch: int
     on: bool
     velocity: int
+    channel: int
+
+
+@dataclass(frozen=True)
+class PedalEvent:
+    """The sustain pedal went down or came up (CC 64).
+
+    Only emitted by a decoder built with `pedal=True`: the practice state machine has no
+    pedal concept, but free play does -- a key released under the pedal keeps sounding,
+    so its light should keep glowing too.
+    """
+
+    t: float
+    down: bool
     channel: int
 
 
@@ -103,39 +117,41 @@ class MidiDecoder:
       * Channel filtering (`channel=0..15`, or `None` for all) and the 88-key pitch
         range 21..108 -- anything outside either is decoded (so parsing stays correct)
         but not emitted.
-      * Sustain pedal (CC 64, `CC_SUSTAIN`): its 2 data bytes are consumed correctly (so
-        running status keeps sync) but **deliberately not surfaced** as a `NoteEvent`.
+      * Sustain pedal (CC 64, `CC_SUSTAIN`): its 2 data bytes are always consumed
+        correctly (so running status keeps sync).  By default it is **not surfaced**:
         `practice.py`'s `PracticeSession` has no pedal concept -- chord completion is
-        purely which pitches are held, and `note_off` never un-satisfies an event (see
-        practice.py's `note_off` docstring) -- so pedal state has no consumer today. A
-        future practice mode that wants sustain should extend `NoteEvent` or add a
-        separate event type here, not repurpose this silent drop.
+        purely which pitches are held.  With `pedal=True` the decoder also emits a
+        `PedalEvent` on every *change* of pedal state (a half-pedal stream of CC 64
+        values maps to a single down/up edge), for free play's sustained lights.
     """
 
     def __init__(
         self,
         clock: Callable[[], float] = time.monotonic,
         channel: int | None = None,
+        pedal: bool = False,
     ) -> None:
         self._clock = clock
         self._channel = channel
+        self._pedal = pedal
+        self._pedal_down: dict[int, bool] = {}
         self._status: int | None = None
         self._pending: list[int] = []
         self._in_sysex = False
 
-    def feed(self, data: bytes, t: float | None = None) -> list[NoteEvent]:
+    def feed(self, data: bytes, t: float | None = None) -> list[NoteEvent | PedalEvent]:
         """Decode a chunk of raw bytes, returning any complete note events in order.
 
         `t`, if given, stamps every event produced by *this* call instead of calling the
         injected clock -- used by the BLE path, which already knows each message's
         timestamp from the packet.
         """
-        events: list[NoteEvent] = []
+        events: list[NoteEvent | PedalEvent] = []
         for byte in data:
             events.extend(self._feed_byte(byte, t))
         return events
 
-    def _feed_byte(self, byte: int, t_override: float | None) -> list[NoteEvent]:
+    def _feed_byte(self, byte: int, t_override: float | None) -> list[NoteEvent | PedalEvent]:
         if 0xF8 <= byte <= 0xFF:
             # System Real-Time: single byte, legal at any position, touches nothing.
             return []
@@ -171,11 +187,18 @@ class MidiDecoder:
 
     def _emit(
         self, status: int, data: list[int], t_override: float | None
-    ) -> list[NoteEvent]:
+    ) -> list[NoteEvent | PedalEvent]:
         nibble = status & 0xF0
         channel = status & 0x0F
         if self._channel is not None and channel != self._channel:
             return []
+        if nibble == 0xB0 and self._pedal and data[0] == CC_SUSTAIN:
+            down = data[1] >= 64
+            if self._pedal_down.get(channel, False) == down:
+                return []
+            self._pedal_down[channel] = down
+            t = self._clock() if t_override is None else t_override
+            return [PedalEvent(t=t, down=down, channel=channel)]
         if nibble not in (0x80, 0x90):
             return []  # CC (incl. sustain), program change, pressure, pitch bend, ...
 
@@ -314,7 +337,9 @@ class NoteTracker:
     def __init__(self) -> None:
         self._held: set[int] = set()
 
-    def apply(self, event: NoteEvent) -> None:
+    def apply(self, event: NoteEvent | PedalEvent) -> None:
+        if isinstance(event, PedalEvent):
+            return
         if event.on:
             self._held.add(event.pitch)
         else:
@@ -342,6 +367,8 @@ def apply_to_session(events: Sequence[NoteEvent], session) -> None:
     adding a hard dependency in either direction; `practice.py` itself is untouched.
     """
     for event in events:
+        if isinstance(event, PedalEvent):
+            continue
         if event.on:
             session.note_on(event.pitch)
         else:
@@ -540,7 +567,7 @@ class MidiIngest:
         """Re-arm the preferred backend order (index 0) for the next `poll()`."""
         self._active_index = 0
 
-    def poll(self) -> list[NoteEvent]:
+    def poll(self) -> list[NoteEvent | PedalEvent]:
         """Read and decode whatever is available; fail over on a dead source.
 
         Returns whatever note events resulted -- possibly synthesized note-offs from a

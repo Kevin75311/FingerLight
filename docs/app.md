@@ -49,6 +49,8 @@ screen and the LED on the bar are the same hue rather than two people's idea of 
 | **Library** | what shall I practise | `app/ui/shot_library.png` |
 | **Session** | what went wrong, and what do I do about it | `app/ui/shot_session.png` |
 | **Settings** | mode, palette, brightness, look-ahead, input | `app/ui/shot_settings.png` |
+| **Free play** | the bar as a light show for whatever is played (§9) | — |
+| **Calibrate** | per-key LED offsets, saved as the default map (§9) | — |
 
 **Play.** Left: the notes due now as finger-coloured chips (note name + finger, the
 waiting ones outlined), with the next event dimmed underneath. Right: accuracy, progress,
@@ -132,7 +134,7 @@ that needs a clock or a file lives in the app engine (`app/engine.py`):
 ```
 python app/server.py --preview            # PC: open http://127.0.0.1:8080/preview
 python3 app/server.py --host 0.0.0.0      # Pi: LEDs on SPI, MIDI + mic threads
-python -m pytest app/tests -q             # 27 tests, PC-only
+python -m pytest app/tests -q             # 45 tests, PC-only
 ```
 
 Stdlib only — no Flask, nothing to install on either side. One server serves the panel,
@@ -140,8 +142,10 @@ any phone, and the preview; each gets the full state on every change over server
 events, so a tap on the phone shows on the panel at once.
 
 ```
-app/server.py       HTTP + SSE; GET /api/state, POST /api/open|transport|note|settings|retry
-app/engine.py       attempts, library, settings, history, loops, play-along clock
+app/server.py       HTTP + SSE; GET /api/state, POST /api/open|transport|note|settings|retry|
+                    pedal|freeplay|calibrate
+app/engine.py       attempts, library, settings, history, loops, play-along clock,
+                    free play, key calibration
 app/inputs.py       MIDI thread (skips ALSA's "Midi Through"), mic thread (D-29 backup)
 app/leds.py         SPI sink reusing tools/hw/ws2812_spi.py, or none
 app/static/         index.html + app.js + app.css (the panel); preview.html + preview.js
@@ -168,6 +172,60 @@ both 1.5 s and 2.5 × the attempt's median; both numbers are guesses to tune on 
 Verified on the PC (Chromium over CDP, 2026-09-30): every screen at 800×480, Play also at 1280×720,
 no element outside the panel, no button under 52 px, no console errors. Not verified: any
 of it on the Pi, on the panel, with a finger.
+
+## 9. Free play and key calibration (2026-10-29)
+
+Two screens added for bring-up, both reachable on the PC preview.
+
+**Who owns the bar.** At any moment exactly one thing draws on it (`Engine.bar_owner`):
+the **Calibrate** screen while it is open, else a **live attempt**, else **free play**. A
+stopped or finished attempt is no longer live, so the bar falls back to free play the
+moment a score ends. (This also fixed a bug: a key pressed after *Stop* used to un-pause a
+summarised wait-mode attempt and could write a second history row.)
+
+**Free play** (tab). Every key you play lights its LED pair and fades when released.
+Settings, all persisted in `settings.json` as `fp_*`:
+
+| | |
+|---|---|
+| Style | *solid* (one colour) · *split* (left / right of a split key) · *rainbow* (hue along the keyboard) · *velocity* (soft = dim teal, hard = bright red) |
+| Colour | ten swatches; in split style, pick the side first |
+| Split | the key where the right side starts, default C4 |
+| Release | fade 0 / 0.25 / 0.6 / 1.5 s, quadratic |
+| Sustain | *pedal holds*: a key released under the pedal stays lit until the pedal comes up |
+
+The pedal is CC 64, now surfaced by `MidiDecoder(pedal=True)` as a `PedalEvent` (edges
+only, so half-pedalling does not flicker); the practice state machine still ignores it.
+Black keys get the same `BLACK_KEY_GAIN` as practice. Fades are drawn by the 50 Hz tick
+straight to the LEDs; the screens only hear about it once a key goes fully dark, so a fade
+does not push 50 state snapshots a second. Logic: `firmware/src/fingerlight/freeplay.py`.
+
+**Calibrate** (Settings → *Calibrate keys…*). The generated map is analytic (one measured
+octave span); this screen corrects it **per key**, one LED (6.94 mm) at a time:
+
+- press a piano key — or tap ◀ key ▶ / the 88-key strip — to select it;
+- the bar shows the selected key's pair **white**, the key to its left **amber**, the key
+  to its right **teal**, so you can see spacing as well as position;
+- **← light / light →** moves that key's pair; **← all / all →** moves every key (a bar
+  glued a few mm off); reset this key / reset all;
+- **Save as default** writes `~/.fingerlight/led_offsets.json`, which every later start
+  loads; **Close** with unsaved changes asks once, then drops them.
+
+Offsets ride on `StripSettings.led_offsets` and are applied in `note_to_leds`, *after*
+upstream's `get_note_position` — which stays verbatim, so `verify_against_map` (D-08) still
+checks the generated map, not the hand corrections. A key may move at most 12 LEDs, and its
+own LED may not leave the strip. If many keys need the same growing correction toward one
+end, that is a scale error: re-measure the octave span and re-run `tools/gen_map.py`
+rather than nudging 40 keys ([[firmware]], `calibration.py`).
+
+While Calibrate is open, every screen redirects to it and the tabs are disabled — the
+bar cannot be half in calibration. A running attempt is paused on entry.
+
+Verified on the PC (Chromium, 800×480): Free play in every style, with and without a score
+open, Settings and Calibrate — nothing outside the panel, no button under 52 px except the
+88 overview cells (a secondary way to select; the piano is the primary one), no console
+errors; in the preview the bar lights, holds under Shift-as-pedal, fades to dark, and shows
+the calibration colours. Not verified: any of it on the Pi.
 
 ## See also
 

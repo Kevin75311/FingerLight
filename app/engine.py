@@ -19,6 +19,13 @@ from the state machine; they live here so the state machine stays pure):
 * **Attempt history** -- one JSON file, so the Session screen can show a delta.
 * **Beats** -- derived from the score's tempo map.  Bars are NOT shown anywhere: the
   light-score format has no time signature, so a bar number would be invented.
+* **Free play** -- whenever no attempt is live, the bar lights whatever is played, in
+  the colours set on the Free play screen (`fingerlight.freeplay`).
+* **Key calibration** -- a per-key LED offset, nudged one LED at a time on the
+  Calibrate screen and saved to `led_offsets.json`, applied on top of the generated map.
+
+Who owns the bar at any moment (`bar_owner`): the calibration screen while it is open,
+else a live attempt, else free play.
 """
 
 from __future__ import annotations
@@ -30,12 +37,16 @@ import os
 import statistics
 import threading
 import time
+from collections import deque
 from dataclasses import dataclass, field
 
 from fingerlight import colors
+from fingerlight.freeplay import STYLES as FREEPLAY_STYLES
+from fingerlight.freeplay import FreePlay, Look, parse_hex
 from fingerlight.lightscore import LightScore, LightScoreError, group_events
 from fingerlight.lightscore import load as load_score
-from fingerlight.notemap import StripSettings
+from fingerlight.notemap import MIDI_MAX, MIDI_MIN, StripSettings, get_note_position
+from fingerlight.notemap import note_to_leds
 from fingerlight.practice import PracticeSession
 
 NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
@@ -69,7 +80,26 @@ DEFAULT_SETTINGS = {
     "hands": "both",         # library default: "both" | "L" | "R"
     "led_order": "GRB",      # wire order, from `led_test.py order`
     "led_one_pattern": "1110",  # SPI bit pattern for a logical 1, from bench stage 3
+    # free play (fingerlight.freeplay.Look)
+    "fp_style": "solid",     # "solid" | "split" | "rainbow" | "velocity"
+    "fp_color": "#ffb060",   # solid; split: below the split key
+    "fp_color2": "#00e6c8",  # split: the split key and above
+    "fp_split": 60,          # C4
+    "fp_fade_ms": 400,       # release fade; 0 = off at once
+    "fp_sustain": True,      # the pedal holds released keys lit
 }
+
+#: Calibration: how far one key may be nudged from the generated map, in LEDs (each
+#: 6.94 mm).  Twelve is ~83 mm -- far past any honest misplacement, so hitting it means
+#: the map itself is wrong and `tools/gen_map.py` wants a new octave span.
+CAL_MAX = 12
+CAL_SELECTED = (255, 255, 255)
+CAL_BELOW = (90, 40, 0)                 # the key to the left, dim amber
+CAL_ABOVE = (0, 70, 55)                 # the key to the right, dim teal
+OFFSETS_FORMAT = "fingerlight-led-offsets"
+
+#: Free play's "recently played" strip on the screen.
+RECENT_NOTES = 12
 
 
 def note_name(p: int) -> str:
@@ -91,6 +121,16 @@ def _write_json(path: str, data) -> None:
     with open(tmp, "w", encoding="utf-8") as fh:
         json.dump(data, fh, indent=1)
     os.replace(tmp, path)
+
+
+def _bool(value) -> bool:
+    if isinstance(value, bool):
+        return value
+    if str(value).lower() in ("true", "1", "on", "yes"):
+        return True
+    if str(value).lower() in ("false", "0", "off", "no"):
+        return False
+    raise ValueError("not a yes/no value: %r" % (value,))
 
 
 def _read_json(path: str, default):
@@ -217,9 +257,24 @@ class Attempt:
     records: dict[int, EventRecord] = field(default_factory=dict)
     lo: int = 0                                 # first event index this attempt covered
     hi: int = 0                                 # last event index it reached
+    ended: bool = False                         # finished or stopped: summary written
 
     def rec(self, i: int) -> EventRecord:
         return self.records.setdefault(i, EventRecord())
+
+
+@dataclass
+class Calibration:
+    """An open calibration screen: the draft offsets and which key is being set."""
+
+    saved: dict[int, int]                       # what led_offsets.json holds
+    draft: dict[int, int]                       # what the bar shows now
+    selected: int = 60
+    visited: set[int] = field(default_factory=set)
+
+    @property
+    def dirty(self) -> bool:
+        return self.draft != self.saved
 
 
 # ================================================================================ engine
@@ -230,7 +285,10 @@ class Engine:
                  strip: StripSettings | None = None, clock=time.monotonic):
         self.home = home
         self.score_dirs = list(score_dirs)
-        self.strip = strip or StripSettings.load()
+        self.base_strip = strip or StripSettings.load()
+        self.offsets_path = os.path.join(home, "led_offsets.json")
+        self.offsets: dict[int, int] = self._load_offsets()
+        self.strip = self.base_strip.with_offsets(self.offsets)
         self.led_sink = led_sink
         self.clock = clock
         self._lock = threading.RLock()
@@ -260,6 +318,10 @@ class Engine:
         }
         self._pixels: dict[int, tuple[int, int, int]] = {}
         self._attempt_no = 0
+        self.freeplay = FreePlay()
+        self.recent: deque[int] = deque(maxlen=RECENT_NOTES)
+        self.calib: Calibration | None = None
+        self._look = self._make_look()
         self.rescan()
 
     # ------------------------------------------------------------------ plumbing
@@ -274,9 +336,33 @@ class Engine:
             self._changed.wait_for(lambda: self.version != seen, timeout=timeout)
             return self.version
 
-    def _render_leds(self) -> None:
+    def bar_owner(self) -> str:
+        """"calibrate", "practice" or "free" -- what the bar is showing."""
+        if self.calib is not None:
+            return "calibrate"
         a = self.attempt
-        pixels = a.session.frame().pixels if (a and not a.session.finished) else {}
+        if a is not None and not a.ended and not a.session.finished:
+            return "practice"
+        return "free"
+
+    def _frame(self) -> dict[int, tuple[int, int, int]]:
+        owner = self.bar_owner()
+        if owner == "practice":
+            return self.attempt.session.frame().pixels
+        if owner == "calibrate":
+            sel = self.calib.selected
+            pixels = {}
+            for p, rgb in ((sel - 1, CAL_BELOW), (sel + 1, CAL_ABOVE)):
+                if MIDI_MIN <= p <= MIDI_MAX:
+                    for i in note_to_leds(p, self.strip):
+                        pixels[i] = rgb
+            for i in note_to_leds(sel, self.strip):       # the selected key wins
+                pixels[i] = CAL_SELECTED
+            return pixels
+        return self.freeplay.frame(self.clock(), self._look, self.strip)
+
+    def _render_leds(self) -> None:
+        pixels = self._frame()
         if pixels == self._pixels:
             return
         self._pixels = dict(pixels)
@@ -306,6 +392,17 @@ class Engine:
             return value
         if key == "led_one_pattern" and value in ("1110", "1100"):
             return value
+        if key == "fp_style" and value in FREEPLAY_STYLES:
+            return value
+        if key in ("fp_color", "fp_color2"):
+            parse_hex(value)
+            return str(value).lower()
+        if key == "fp_split":
+            return min(MIDI_MAX, max(MIDI_MIN, int(value)))
+        if key == "fp_fade_ms":
+            return min(3000, max(0, int(value)))
+        if key == "fp_sustain":
+            return _bool(value)
         raise ValueError("bad value for %s: %r" % (key, value))
 
     def set_setting(self, key: str, value) -> None:
@@ -326,7 +423,15 @@ class Engine:
                     self._rewind_clock(a)
             if key == "brightness" and self.led_sink is not None:
                 self._pixels = {}           # force a re-send at the new level
+            if key.startswith("fp_"):
+                self._look = self._make_look()
             self._bump()
+
+    def _make_look(self) -> Look:
+        st = self.settings
+        return Look(style=st["fp_style"], color=parse_hex(st["fp_color"]),
+                    color2=parse_hex(st["fp_color2"]), split=st["fp_split"],
+                    fade_ms=st["fp_fade_ms"], sustain=st["fp_sustain"])
 
     def set_input_status(self, name: str, state: str, detail: str = "") -> None:
         with self._lock:
@@ -420,6 +525,8 @@ class Engine:
             a = self.attempt
             if a is None:
                 raise LightScoreError("no score open")
+            if a.ended:
+                raise LightScoreError("this attempt has ended -- try again from the session")
             s = a.session
             now = self.clock()
             if cmd in ("play", "pause", "toggle"):
@@ -481,22 +588,32 @@ class Engine:
 
     # -------------------------------------------------------------------- input
 
-    def note(self, pitch: int, on: bool, source: str = "keys") -> bool | None:
+    def note(self, pitch: int, on: bool, source: str = "keys",
+             velocity: int = 100) -> bool | None:
         """Feed one note from any input.  Returns whether a note-on was correct."""
         with self._lock:
             pitch = int(pitch)
             if not 21 <= pitch <= 108:
                 return None
+            now = self.clock()
             if not on:
                 self.held.discard(pitch)
+                self.freeplay.note_off(pitch, now, self._look.sustain)
                 if self.attempt is not None:
                     self.attempt.session.note_off(pitch)
                 self._bump()
                 return None
             self.held.add(pitch)
+            self.freeplay.note_on(pitch, int(velocity), now)
+            self.recent.append(pitch)
+            if self.calib is not None:          # calibrating: a key press picks the key
+                self.calib.selected = pitch
+                self.calib.visited.add(pitch)
+                self._bump()
+                return None
             a = self.attempt
             result = None
-            if a is not None and not a.session.finished:
+            if a is not None and not a.ended and not a.session.finished:
                 if not a.running and a.mode == "wait":
                     self.transport("play")      # playing in wait mode means "go"
                 if a.running:
@@ -519,11 +636,27 @@ class Engine:
             self._after_move(a)
         return ok
 
+    def pedal(self, down: bool) -> None:
+        """The sustain pedal (CC 64).  Only free play uses it."""
+        with self._lock:
+            down = bool(down)
+            if down != self.freeplay.pedal:
+                self.freeplay.set_pedal(down, self.clock())
+                self._bump()
+
+    def end_attempt(self) -> None:
+        """Hand the bar to free play: end the open attempt, as Stop would."""
+        with self._lock:
+            a = self.attempt
+            if a is not None and not a.ended and not a.session.finished:
+                self._finish(a, stopped=True)
+                self._bump()
+
     def autoplay(self) -> None:
         """Preview helper: play the current event correctly, as a piano would."""
         with self._lock:
             a = self.attempt
-            if a is None or a.session.finished:
+            if a is None or a.ended or a.session.finished:
                 return
             for p in sorted(a.session.waiting_for):
                 self.note(p, True, "auto")
@@ -543,10 +676,12 @@ class Engine:
     # -------------------------------------------------------------------- clock
 
     def tick(self) -> None:
-        """Advance the play-along clock.  Called ~50x a second by the server."""
+        """Advance the play-along clock and free play's fades.  ~50x a second."""
         with self._lock:
+            self._tick_freeplay()
             a = self.attempt
-            if a is None or a.mode != "along" or not a.running or a.session.finished:
+            if (a is None or a.ended or a.mode != "along" or not a.running
+                    or a.session.finished):
                 return
             now = self.clock()
             a.clock_ms += (now - a.last_tick) * 1000.0 * a.tempo / 100.0
@@ -571,10 +706,128 @@ class Engine:
             if moved:
                 self._bump()
 
+    def _tick_freeplay(self) -> None:
+        if not self.freeplay.lit or self.bar_owner() != "free":
+            return
+        now = self.clock()
+        if self.freeplay.fading(now, self._look):
+            self._render_leds()                 # a fade step: LEDs only, no state push
+        if self.freeplay.prune(now, self._look):
+            self._bump()                        # a key went dark: tell the screens
+
+    # --------------------------------------------------------------- calibration
+
+    def _load_offsets(self) -> dict[int, int]:
+        raw = _read_json(self.offsets_path, {})
+        out = {}
+        if not isinstance(raw, dict) or raw.get("format") != OFFSETS_FORMAT:
+            return out
+        for k, v in (raw.get("offsets") or {}).items():
+            try:
+                n, d = int(k), int(v)
+            except (TypeError, ValueError):
+                continue
+            if MIDI_MIN <= n <= MIDI_MAX and d and abs(d) <= CAL_MAX:
+                out[n] = d
+        return out
+
+    def _use_offsets(self, offsets: dict[int, int]) -> None:
+        self.strip = self.base_strip.with_offsets(offsets)
+        if self.attempt is not None:
+            self.attempt.session.settings = self.strip
+
+    def _check_on_strip(self, offsets: dict[int, int], notes) -> None:
+        last = self.base_strip.led_count - 1
+        for n in notes:
+            led = get_note_position(n, self.base_strip) + offsets.get(n, 0)
+            # the key's own LED must stay on; its partner (led + 1) is clamped at C8
+            if not 0 <= led <= last:
+                raise ValueError("%s would leave the strip" % note_name(n))
+            if abs(offsets.get(n, 0)) > CAL_MAX:
+                raise ValueError("%s is already %d LEDs off the map -- if keys are this "
+                                 "far out, re-measure the octave span instead"
+                                 % (note_name(n), CAL_MAX))
+
+    def calibrate(self, cmd: str, arg=None) -> None:
+        """The Calibrate screen.  `cmd`: start, select, step, nudge, shift_all,
+        reset_key, reset_all, save, close."""
+        with self._lock:
+            c = self.calib
+            if cmd == "start":
+                if c is None:
+                    a = self.attempt
+                    if a is not None and a.running and not a.ended:
+                        self.transport("pause")
+                    sel = int(arg) if arg is not None else 60
+                    sel = min(MIDI_MAX, max(MIDI_MIN, sel))
+                    self.calib = Calibration(saved=dict(self.offsets),
+                                             draft=dict(self.offsets),
+                                             selected=sel, visited={sel})
+                self._bump()
+                return
+            if c is None:
+                raise ValueError("calibration is not open")
+            if cmd in ("select", "step"):
+                n = int(arg) if cmd == "select" else c.selected + int(arg or 1)
+                c.selected = min(MIDI_MAX, max(MIDI_MIN, n))
+                c.visited.add(c.selected)
+            elif cmd in ("nudge", "shift_all"):
+                step = int(arg)
+                if step not in (-1, 1):
+                    raise ValueError("nudge by -1 or +1 LED")
+                keys = [c.selected] if cmd == "nudge" else range(MIDI_MIN, MIDI_MAX + 1)
+                new = dict(c.draft)
+                for n in keys:
+                    new[n] = new.get(n, 0) + step
+                self._check_on_strip(new, keys)
+                c.draft = {n: d for n, d in new.items() if d}
+                if cmd == "nudge":
+                    c.visited.add(c.selected)
+            elif cmd == "reset_key":
+                c.draft.pop(c.selected, None)
+            elif cmd == "reset_all":
+                c.draft = {}
+            elif cmd == "save":
+                _write_json(self.offsets_path, {
+                    "format": OFFSETS_FORMAT, "version": 1, "saved_at": _now_iso(),
+                    "note": "per-key LED offsets from the Calibrate screen; + moves a "
+                            "key's light toward C8",
+                    "octave_span_mm": self.base_strip.octave_span_mm,
+                    "led_count": self.base_strip.led_count,
+                    "offsets": {str(n): d for n, d in sorted(c.draft.items())},
+                })
+                self.offsets = dict(c.draft)
+                c.saved = dict(c.draft)
+            elif cmd == "close":
+                self.calib = None
+                self._use_offsets(self.offsets)     # unsaved nudges are dropped
+                self._bump()
+                return
+            else:
+                raise ValueError("unknown calibration command %r" % cmd)
+            self._use_offsets(c.draft)
+            self._bump()
+
+    def _calibration_state(self) -> dict | None:
+        c = self.calib
+        if c is None:
+            return None
+        pitch_mm = 1000.0 / self.base_strip.leds_per_meter
+        off = c.draft.get(c.selected, 0)
+        return {
+            "selected": c.selected, "note": note_name(c.selected),
+            "offset": off, "offset_mm": round(off * pitch_mm, 1),
+            "leds": list(note_to_leds(c.selected, self.strip)),
+            "visited": sorted(c.visited),
+            "offsets": {str(n): d for n, d in sorted(c.draft.items())},
+            "dirty": c.dirty, "saved_count": len(c.saved), "max": CAL_MAX,
+        }
+
     # ------------------------------------------------------------------- results
 
     def _finish(self, a: Attempt, stopped: bool) -> None:
         a.running = False
+        a.ended = True
         sc = a.score
         wrong = sum(len(r.wrong) for r in a.records.values())
         denom = a.credited + wrong + a.missed
@@ -663,6 +916,14 @@ class Engine:
                     "amps_full": round(led_n * AMPS_PER_LED_WHITE, 1),
                 },
                 "held": sorted(self.held),
+                "bar": self.bar_owner(),
+                "freeplay": {
+                    "held": [note_name(p) for p in sorted(self.held)],
+                    "recent": [note_name(p) for p in self.recent],
+                    "pedal": self.freeplay.pedal,
+                },
+                "calibration": self._calibration_state(),
+                "led_offsets": {"count": len(self.offsets), "path": self.offsets_path},
                 "practice": self._practice_state(),
                 "summary": self.summary,
                 "error": self.error,
@@ -711,7 +972,7 @@ class Engine:
         return {
             "attempt": a.number, "score_id": a.score_id, "title": a.title,
             "hands": a.hands, "mode": a.mode, "tempo": a.tempo,
-            "running": a.running, "finished": s.finished,
+            "running": a.running, "finished": s.finished, "ended": a.ended,
             "index": s.index, "total": total, "done": done,
             "now": now_chips, "now_hands": hands_now, "next": nxt,
             "accuracy": round(100.0 * a.credited / denom) if denom else None,

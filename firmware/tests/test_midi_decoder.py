@@ -151,3 +151,22 @@ def test_timestamp_override_bypasses_clock():
     dec = MidiDecoder(clock=lambda: 999.0)
     events = dec.feed(bytes([0x90, 60, 100]), t=42.0)
     assert events[0].t == 42.0
+
+
+# ------------------------------------------------------------- sustain, opted in
+
+
+def test_pedal_events_are_edges_only_when_asked_for():
+    from fingerlight.midi import PedalEvent
+
+    dec = MidiDecoder(clock=lambda: 1.5, pedal=True)
+    # down, a half-pedal wobble that stays down, up; then a note with running status
+    events = dec.feed(bytes([0xB0, 64, 127, 64, 90, 64, 0, 0x90, 60, 100]))
+    pedals = [e for e in events if isinstance(e, PedalEvent)]
+    assert [(p.down, p.t) for p in pedals] == [(True, 1.5), (False, 1.5)]
+    assert ev_tuples([e for e in events if not isinstance(e, PedalEvent)]) == [(60, True, 100, 0)]
+
+
+def test_other_controllers_never_surface_even_with_pedal_on():
+    dec = MidiDecoder(clock=lambda: 0.0, pedal=True)
+    assert dec.feed(bytes([0xB0, 7, 100, 0xB0, 67, 127])) == []   # volume, soft pedal
