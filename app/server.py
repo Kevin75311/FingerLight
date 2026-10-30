@@ -216,7 +216,7 @@ def main(argv=None) -> int:
     kind = "none" if args.preview else args.leds
     try:
         eng.led_sink = make_sink(kind, eng.strip.led_count, eng.settings["led_order"],
-                                 eng.settings["led_one_pattern"])
+                                 eng.settings["led_one_pattern"], eng.settings["led_mirror"])
     except Exception as exc:
         print("LED output unavailable (%s) -- continuing without it" % exc, file=sys.stderr)
         eng.led_sink = make_sink("none", 0, "GRB", "1110")

@@ -80,6 +80,7 @@ DEFAULT_SETTINGS = {
     "hands": "both",         # library default: "both" | "L" | "R"
     "led_order": "GRB",      # wire order, from `led_test.py order`
     "led_one_pattern": "1110",  # SPI bit pattern for a logical 1, from bench stage 3
+    "led_mirror": False,     # True when the strip's data input is at the C8 end
     # free play (fingerlight.freeplay.Look)
     "fp_style": "solid",     # "solid" | "split" | "rainbow" | "velocity"
     "fp_color": "#ffb060",   # solid; split: below the split key
@@ -392,6 +393,8 @@ class Engine:
             return value
         if key == "led_one_pattern" and value in ("1110", "1100"):
             return value
+        if key == "led_mirror":
+            return _bool(value)
         if key == "fp_style" and value in FREEPLAY_STYLES:
             return value
         if key in ("fp_color", "fp_color2"):

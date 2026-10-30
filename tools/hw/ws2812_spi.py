@@ -49,13 +49,19 @@ class Strip:
 
     `order` is the wire order of the chip: WS2812B is GRB, SK6812 RGBW is GRBW
     (this class handles RGB only -- for RGBW add the W byte here, not in callers).
+
+    `mirror` is for a bar mounted with its data input at the C8 end: index 0 still
+    means the A0 end to every caller, and only the wire order of pixels is reversed.
+    This is a true mirror (i -> n-1-i), unlike upstream's `reverse` (n - pos), which
+    is one LED off and folds A0 onto the clamp.
     """
 
     def __init__(self, n, order="GRB", hz=SPI_HZ, bus=0, device=0,
-                 zero=ZERO_PATTERN, one=ONE_PATTERN, brightness=1.0):
+                 zero=ZERO_PATTERN, one=ONE_PATTERN, brightness=1.0, mirror=False):
         self.n = n
         self.order = order.upper()
         self.brightness = brightness
+        self.mirror = bool(mirror)
         self._table = _table(zero, one)
         self._reset = bytes(max(1, int(hz * RESET_US / 1e6 / 8)))
         self.buf = [(0, 0, 0)] * n
@@ -124,7 +130,7 @@ class Strip:
         """The exact bytes that go out of MOSI for the current buffer."""
         b = self.brightness
         out = bytearray()
-        for r, g, bl in self.buf:
+        for r, g, bl in (reversed(self.buf) if self.mirror else self.buf):
             if b != 1.0:
                 r, g, bl = int(r * b), int(g * b), int(bl * b)
             chan = {"R": r & 0xFF, "G": g & 0xFF, "B": bl & 0xFF}
@@ -185,6 +191,15 @@ def selftest():
     s176.brightness = 0.5
     half = s176.frame()
     check("brightness scales the wire", half[:4].hex(), _table()[127].hex())
+
+    # mirror: the same red/green/blue buffer goes out blue, green, red
+    m = Strip(3, mirror=True)
+    m[0] = (255, 0, 0)
+    m[1] = (0, 255, 0)
+    m[2] = (0, 0, 255)
+    check("mirror reverses the wire", m.frame()[:36].hex(), f[24:36].hex() + f[12:24].hex()
+          + f[0:12].hex())
+    check("mirror leaves the buffer", m[0], (255, 0, 0))
 
     print("\nSELFTEST %s" % ("PASS" if ok else "FAIL"))
     return 0 if ok else 1

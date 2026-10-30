@@ -26,11 +26,12 @@ class SpiSink:
     """176 WS2812s on SPI0 / GPIO10 (D-28).  `dry=True` counts frames without spidev."""
 
     def __init__(self, n: int, order: str = "GRB", one_pattern: str = "1110",
-                 dry: bool = False):
+                 dry: bool = False, mirror: bool = False):
         drv = _load_driver()
         self.n = n
         self.dry = dry
-        self.strip = drv.Strip(n, order=order, one=int(one_pattern, 2)).open(dry=dry)
+        self.strip = drv.Strip(n, order=order, one=int(one_pattern, 2),
+                               mirror=mirror).open(dry=dry)
         self.frames = 0
 
     def describe(self) -> str:
@@ -70,10 +71,11 @@ def spi_present() -> bool:
     return os.path.exists("/dev/spidev0.0") and importlib.util.find_spec("spidev") is not None
 
 
-def make_sink(kind: str, n: int, order: str, one_pattern: str):
+def make_sink(kind: str, n: int, order: str, one_pattern: str, mirror: bool = False):
     """`kind`: "auto" (SPI when the Pi has it), "spi", "dry" or "none"."""
     if kind == "auto":
         kind = "spi" if spi_present() else "none"
     if kind == "none":
         return NullSink()
-    return SpiSink(n, order=order, one_pattern=one_pattern, dry=(kind == "dry"))
+    return SpiSink(n, order=order, one_pattern=one_pattern, dry=(kind == "dry"),
+                   mirror=mirror)

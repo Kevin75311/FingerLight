@@ -549,3 +549,14 @@ def test_server_free_play_and_calibration_round_trip(server):
     assert st["bar"] == "calibrate" and st["calibration"]["offset"] == 1
     assert st["freeplay"]["pedal"] is True and st["summary"]["stopped"] is True
     assert _post(server, "/api/calibrate", {"cmd": "close"})[0] == 200
+
+
+def test_led_mirror_is_a_saved_setting_and_reaches_the_sink(tmp_path, clock):
+    import leds
+
+    assert E.Engine(str(tmp_path), [], clock=clock).settings["led_mirror"] is False
+    (tmp_path / "settings.json").write_text(json.dumps({"led_mirror": True}), encoding="utf-8")
+    e = E.Engine(str(tmp_path), [], clock=clock)
+    assert e.settings["led_mirror"] is True
+    sink = leds.make_sink("dry", e.strip.led_count, "GRB", "1110", e.settings["led_mirror"])
+    assert sink.strip.mirror is True
