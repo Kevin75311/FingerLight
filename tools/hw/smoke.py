@@ -50,6 +50,15 @@ def note_name(n: int) -> str:
     return "%s%d" % (NAMES[n % 12], n // 12 - 1)
 
 
+def saved_mirror(home: str = HOME) -> bool:
+    """The app's `led_mirror` setting, so the bench tools wire the bar the same way."""
+    try:
+        with open(os.path.join(home, "settings.json"), encoding="utf-8") as fh:
+            return bool(json.load(fh).get("led_mirror", False))
+    except (OSError, ValueError, AttributeError):
+        return False
+
+
 def load_strip(home: str = HOME) -> StripSettings:
     """The generated map plus the calibration screen's saved offsets, if any."""
     s = StripSettings.load()
@@ -153,7 +162,7 @@ def step_preflight() -> dict:
 def open_strip(args):
     from ws2812_spi import Strip
 
-    s = Strip(args.n, order=args.order, brightness=args.brightness)
+    s = Strip(args.n, order=args.order, brightness=args.brightness, mirror=args.mirror)
     return s.open(dry=args.dry_run)
 
 
@@ -262,9 +271,14 @@ def main(argv=None) -> int:
     ap.add_argument("--dry-run", action="store_true", help="no SPI writes")
     ap.add_argument("--yes", choices=("y", "n"), default=None,
                     help="answer every strip question (for unattended runs)")
+    ap.add_argument("--mirror", action=argparse.BooleanOptionalAction, default=None,
+                    help="data input at the C8 end (default: the app's led_mirror setting)")
     args = ap.parse_args(argv)
+    if args.mirror is None:
+        args.mirror = saved_mirror(args.home)
 
-    report = {"at": _dt.datetime.now().replace(microsecond=0).isoformat(), "steps": {}}
+    report = {"at": _dt.datetime.now().replace(microsecond=0).isoformat(),
+              "mirror": args.mirror, "steps": {}}
     if not args.skip_preflight:
         report["steps"]["preflight"] = step_preflight()
     strip = None

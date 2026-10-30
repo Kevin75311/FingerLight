@@ -55,10 +55,21 @@ def led_count(default=176):
         return default
 
 
+def saved_mirror():
+    """The app's `led_mirror` setting, so this tool wires the bar the same way."""
+    try:
+        path = os.path.join(os.path.expanduser("~"), ".fingerlight", "settings.json")
+        with open(path, encoding="utf-8") as f:
+            return bool(json.load(f).get("led_mirror", False))
+    except Exception:
+        return False
+
+
 def make_strip(args):
     from ws2812_spi import Strip
 
-    s = Strip(args.n, order=args.order, hz=args.hz, brightness=args.brightness)
+    s = Strip(args.n, order=args.order, hz=args.hz, brightness=args.brightness,
+              mirror=args.mirror)
     if args.one_pattern:
         from ws2812_spi import _table
         s._table = _table(0b1000, int(args.one_pattern, 2))
@@ -394,7 +405,11 @@ def main():
     ap.add_argument("--dry-run", action="store_true",
                     help="no SPI: print what would be sent (works on any machine)")
     ap.add_argument("--one-pattern", default="", help="e.g. 1100 to shorten T1H if a strip is fussy")
+    ap.add_argument("--mirror", action=argparse.BooleanOptionalAction, default=None,
+                    help="data input at the C8 end (default: the app's led_mirror setting)")
     args = ap.parse_args()
+    if args.mirror is None:
+        args.mirror = saved_mirror()
 
     if args.stage == "stages":
         print("Run these in order. Each one proves something the next one assumes.\n")
@@ -403,8 +418,9 @@ def main():
         print("\nDefault strip length: %d LEDs (from data/led_map.json)" % args.n)
         return 0
 
-    print("stage %s -- %d LEDs, %s, %.0f%% brightness, %.1f MHz"
-          % (args.stage, args.n, args.order, args.brightness * 100, args.hz / 1e6))
+    print("stage %s -- %d LEDs, %s%s, %.0f%% brightness, %.1f MHz"
+          % (args.stage, args.n, args.order, ", mirrored" if args.mirror else "",
+             args.brightness * 100, args.hz / 1e6))
     strip = make_strip(args)
     try:
         strip.open(dry=args.dry_run)

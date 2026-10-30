@@ -443,7 +443,7 @@ function renderSettings() {
     '<button class="btn small" data-act="calstart">Calibrate keys&hellip;</button></div></div>' +
     '<div class="srow"><div class="k">LED bar<small>wire order and timing live in settings.json</small></div>' +
     '<div class="info"><b>' + S.led.count + "</b> LEDs &middot; " + esc(S.led.sink) + " &middot; order <b>" + esc(st.led_order) +
-    "</b> &middot; 1-bit <b>" + esc(st.led_one_pattern) + "</b><br>MIDI: " + esc(S.inputs.midi.detail || S.inputs.midi.state) +
+    "</b> &middot; 1-bit <b>" + esc(st.led_one_pattern) + "</b>" + (st.led_mirror ? " &middot; <b>mirrored</b>" : "") + "<br>MIDI: " + esc(S.inputs.midi.detail || S.inputs.midi.state) +
     "</div></div>" +
     "</div></div>";
 }

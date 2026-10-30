@@ -62,8 +62,8 @@ def _fake_mido(msgs, ports=("Midi Through Port-0", "CASIO USB-MIDI")):
 
 
 def _args(tmp_path):
-    return types.SimpleNamespace(n=176, order="GRB", brightness=0.15, dry_run=True,
-                                 timeout=5.0, home=str(tmp_path), yes="y")
+    return types.SimpleNamespace(n=176, order="GRB", mirror=False, brightness=0.15,
+                                 dry_run=True, timeout=5.0, home=str(tmp_path), yes="y")
 
 
 def test_key_step_all_88_with_pedal_passes_and_lights_each_key(tmp_path, monkeypatch):
