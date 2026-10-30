@@ -331,4 +331,4 @@ button:disabled { opacity: .35; cursor: default; }
 .fpnow .chips { min-height: 48px; }
 .chip.fp { height: 48px; font-size: 20px; }
 .fprows .srow { height: 60px; }
-.fprows .seg button { padding: 0 12px; }
+.fprows .seg button { padding: 0 10px; }

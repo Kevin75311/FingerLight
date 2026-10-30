@@ -1261,6 +1261,47 @@ python tools/check_vault.py -> 17 notes, 252 relative links, 0 broken, 0 wikilin
 
 ---
 
+## 2026-10-30 — Free play feels like a piano; dimmer default
+
+Kevin: the smoke test passed on the Pi (and `led_mirror` went in on main for a bar fed from
+the C8 end). Feedback from the first real use: key presses should fade, the bar is too
+bright, and the pedal should do something like lengthen the fade.
+
+**Done**
+- **Strike decay** (`Look.strike`): a key lights at full and eases over 1.2 s to a glow
+  while held — *soft fade* 40 % (default), *flash* 12 %, or *steady*. Release fades from
+  that glow.
+- **Pedal lengthens fades** (`Look.pedal = "longer"`, default): under the pedal a release
+  fades 4× slower (≥ 1.5 s); lifting it re-times every tail still glowing to the normal
+  fade from its current level — no jump. *hold* (the old behaviour) and *pedal off* remain.
+- **Brightness default 40 % → 25 %**, with a one-time `settings.json` migration (v2) that
+  moves a brightness still at the old default and maps `fp_sustain` to `fp_pedal`.
+- Free play screen: a *Key press* row; *Release · pedal* row with fade 0 / 0.4 / 0.8 /
+  1.5 s (0.4 s, the default, is now one of the choices) and pedal off / longer / hold.
+
+**Evidence**
+```
+python -m pytest firmware/tests score/tests app/tests tools/tests -q
+  -> 271 passed (147 firmware, 68 score, 48 app, 8 tools)
+Chromium at 800x480: Free play in every style -> 0 elements outside the panel, 0 buttons
+  under 52 px, 0 console errors
+```
+
+**Found / changed**
+- **A settled glow could be left one step short.** The engine only redrew a held key while
+  it judged the key "still animating"; a tick landing just after the decay ended left the
+  last in-between level on the strip. The tick now redraws whenever anything is lit;
+  `_render_leds` already drops a frame identical to the last, so a settled bar costs
+  nothing.
+
+**Verified vs. assumed**
+- VERIFIED on the PC: the above. **UNVERIFIED on the Pi:** how 40 % / 12 % glows and a
+  25 % cap actually look through the diffuser — all four numbers are first guesses.
+
+**Next:** play it on the bar and tune `STRIKES`, `DECAY_MS`, `PEDAL_FADE_X` by eye.
+
+---
+
 ## Entry template
 
 ```markdown

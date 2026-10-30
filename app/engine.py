@@ -42,7 +42,7 @@ from dataclasses import dataclass, field
 
 from fingerlight import colors
 from fingerlight.freeplay import STYLES as FREEPLAY_STYLES
-from fingerlight.freeplay import FreePlay, Look, parse_hex
+from fingerlight.freeplay import PEDAL_MODES, STRIKES, FreePlay, Look, parse_hex
 from fingerlight.lightscore import LightScore, LightScoreError, group_events
 from fingerlight.lightscore import load as load_score
 from fingerlight.notemap import MIDI_MAX, MIDI_MIN, StripSettings, get_note_position
@@ -74,7 +74,7 @@ AMPS_PER_LED_WHITE = 0.060
 DEFAULT_SETTINGS = {
     "mode": "wait",          # "wait" (wait for me) | "along" (play along)
     "palette": colors.PALETTE,
-    "brightness": 0.40,      # global cap, 0.05..1.0
+    "brightness": 0.25,      # global cap, 0.05..1.0
     "lookahead": 1,          # events dim-lit ahead of now (Q-06)
     "input": "midi",         # "midi" | "mic"
     "hands": "both",         # library default: "both" | "L" | "R"
@@ -87,8 +87,12 @@ DEFAULT_SETTINGS = {
     "fp_color2": "#00e6c8",  # split: the split key and above
     "fp_split": 60,          # C4
     "fp_fade_ms": 400,       # release fade; 0 = off at once
-    "fp_sustain": True,      # the pedal holds released keys lit
+    "fp_strike": "soft",     # a held key: "steady" | "soft" | "flash" (freeplay.STRIKES)
+    "fp_pedal": "longer",    # sustain pedal: "off" | "longer" fades | "hold" lit
 }
+
+#: Bumped when a saved settings.json needs migrating (`_migrate_settings`).
+SETTINGS_VERSION = 2
 
 #: Calibration: how far one key may be nudged from the generated map, in LEDs (each
 #: 6.94 mm).  Twelve is ~83 mm -- far past any honest misplacement, so hitting it means
@@ -132,6 +136,23 @@ def _bool(value) -> bool:
     if str(value).lower() in ("false", "0", "off", "no"):
         return False
     raise ValueError("not a yes/no value: %r" % (value,))
+
+
+def _migrate_settings(saved: dict) -> dict:
+    """Bring a settings.json from an older version up to `SETTINGS_VERSION`.
+
+    v1 -> v2 (2026-10-30): the bar read too bright at the old 40 % default, so a
+    brightness still *at* that default moves to the new one (a value the player chose is
+    kept); and `fp_sustain` (pedal holds keys lit) became `fp_pedal`, where on means the
+    new default, longer fades, rather than freezing keys lit.
+    """
+    saved = dict(saved)
+    if int(saved.get("settings_version") or 1) < 2:
+        if saved.get("brightness") == 0.40:
+            saved["brightness"] = DEFAULT_SETTINGS["brightness"]
+        if "fp_sustain" in saved:
+            saved["fp_pedal"] = "longer" if saved.pop("fp_sustain") else "off"
+    return saved
 
 
 def _read_json(path: str, default):
@@ -299,6 +320,7 @@ class Engine:
         self.settings_path = os.path.join(home, "settings.json")
         self.history_path = os.path.join(home, "history.json")
         saved = _read_json(self.settings_path, {})
+        saved = _migrate_settings(saved) if isinstance(saved, dict) else {}
         self.settings = dict(DEFAULT_SETTINGS)
         for k, v in saved.items():
             if k in DEFAULT_SETTINGS:
@@ -404,8 +426,10 @@ class Engine:
             return min(MIDI_MAX, max(MIDI_MIN, int(value)))
         if key == "fp_fade_ms":
             return min(3000, max(0, int(value)))
-        if key == "fp_sustain":
-            return _bool(value)
+        if key == "fp_strike" and value in STRIKES:
+            return value
+        if key == "fp_pedal" and value in PEDAL_MODES:
+            return value
         raise ValueError("bad value for %s: %r" % (key, value))
 
     def set_setting(self, key: str, value) -> None:
@@ -413,7 +437,8 @@ class Engine:
             if key not in DEFAULT_SETTINGS:
                 raise ValueError("unknown setting %r" % key)
             self.settings[key] = self._validate(key, value)
-            _write_json(self.settings_path, self.settings)
+            _write_json(self.settings_path,
+                        dict(self.settings, settings_version=SETTINGS_VERSION))
             a = self.attempt
             if a is not None:
                 if key == "palette":
@@ -434,7 +459,8 @@ class Engine:
         st = self.settings
         return Look(style=st["fp_style"], color=parse_hex(st["fp_color"]),
                     color2=parse_hex(st["fp_color2"]), split=st["fp_split"],
-                    fade_ms=st["fp_fade_ms"], sustain=st["fp_sustain"])
+                    fade_ms=st["fp_fade_ms"], strike=st["fp_strike"],
+                    pedal=st["fp_pedal"])
 
     def set_input_status(self, name: str, state: str, detail: str = "") -> None:
         with self._lock:
@@ -601,7 +627,7 @@ class Engine:
             now = self.clock()
             if not on:
                 self.held.discard(pitch)
-                self.freeplay.note_off(pitch, now, self._look.sustain)
+                self.freeplay.note_off(pitch, now, self._look)
                 if self.attempt is not None:
                     self.attempt.session.note_off(pitch)
                 self._bump()
@@ -644,7 +670,7 @@ class Engine:
         with self._lock:
             down = bool(down)
             if down != self.freeplay.pedal:
-                self.freeplay.set_pedal(down, self.clock())
+                self.freeplay.set_pedal(down, self.clock(), self._look)
                 self._bump()
 
     def end_attempt(self) -> None:
@@ -713,8 +739,8 @@ class Engine:
         if not self.freeplay.lit or self.bar_owner() != "free":
             return
         now = self.clock()
-        if self.freeplay.fading(now, self._look):
-            self._render_leds()                 # a fade step: LEDs only, no state push
+        self._render_leds()                     # a fade step: LEDs only, no state push;
+                                                # an unchanged frame is not re-sent
         if self.freeplay.prune(now, self._look):
             self._bump()                        # a key went dark: tell the screens
 

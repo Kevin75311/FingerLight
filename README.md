@@ -28,14 +28,14 @@ What comes from there, what comes from ScoreForge, and what is new: [provenance]
 
 ```
 python -m pytest firmware/tests score/tests app/tests tools/tests -q
-                                ->  261 passed  (143 firmware, 68 score, 45 app, 5 tools)
+                                ->  271 passed  (147 firmware, 68 score, 48 app, 8 tools)
 python tools/hw/smoke.py                          ->  the build-day gate, on the Pi
 python tools/check_vault.py                       ->  17 notes, 252 links, 0 broken
 python sim/verify_scene.py                        ->  16 checks, 0 failed
 python app/server.py --preview                    ->  http://127.0.0.1:8080/preview
 ```
 
-All 261 tests run on a PC with no Pi, no LED strip, no piano and no MIDI interface. As of
+All 271 tests run on a PC with no Pi, no LED strip, no piano and no MIDI interface. As of
 2026-09-30 the modules *are* wired together — `app/` is the main loop: SPI LED output
 through the bench-tested encoder, a MIDI thread, a mic thread and the touchscreen UI — but
 none of that wiring has met a Pi 5 yet. The SPI path itself is still the first bench task
@@ -47,7 +47,7 @@ none of that wiring has met a Pi 5 yet. The SPI path itself is still the first b
    through the real firmware path. Taste, not engineering.
 2. **CAD file** for the mechanical build — you own the mechanical side. [hardware](docs/hardware.md)
 3. **`git init`?** Still undecided. Box has already fought one `.git` directory here.
-4. **Sustain pedal in practice?** Free play now honours CC 64 (a released key stays lit
+4. **Sustain pedal in practice?** Free play now honours CC 64 (releases fade longer
    under the pedal). The practice state machine still ignores it. Say if it should.
 5. **Install Audiveris** if you want the PDF/photo input path — that code is written but
    its subprocess call has never run against a real binary.

@@ -401,18 +401,46 @@ def test_fade_steps_drive_the_leds_without_flooding_the_screens(eng, clock):
     assert eng.version == v and len(eng.led_sink.frames) == n + 5
 
 
-def test_pedal_holds_free_play_lights(eng, clock):
+def test_pedal_lengthens_free_play_fades(eng, clock):
     eng.pedal(True)
+    assert eng.state()["freeplay"]["pedal"] is True
     eng.note(64, True)
     eng.note(64, False)
-    clock.t += 5.0
+    clock.t += 0.6                          # past the 400 ms fade, inside the pedal's
     eng.tick()
-    assert eng.led_sink.frames[-1][0], "held by the pedal"
-    assert eng.state()["freeplay"]["pedal"] is True
-    eng.pedal(False)
-    clock.t += 1.0
+    assert eng.led_sink.frames[-1][0], "the pedal's longer tail is still glowing"
+    eng.pedal(False)                        # dampers down: back to 400 ms from here
+    clock.t += 0.5
     eng.tick()
     assert eng.led_sink.frames[-1][0] == {}
+
+
+def test_a_held_key_dims_on_its_own_and_then_stops_redrawing(eng, clock):
+    eng.set_setting("fp_color", "#c86432")
+    eng.note(60, True)
+    lo, _ = note_to_leds(60, eng.strip)
+    assert eng.led_sink.frames[-1][0][lo] == (200, 100, 50)
+    clock.t += 5.0
+    eng.tick()
+    assert eng.led_sink.frames[-1][0][lo] == (80, 40, 20), "settled at the soft 40 %"
+    n = len(eng.led_sink.frames)
+    clock.t += 1.0
+    eng.tick()
+    assert len(eng.led_sink.frames) == n, "settled: no more frames"
+
+
+def test_old_settings_migrate_once(tmp_path, clock):
+    (tmp_path / "settings.json").write_text(json.dumps(
+        {"brightness": 0.40, "fp_sustain": True, "palette": "distinct"}), encoding="utf-8")
+    e = E.Engine(str(tmp_path), [], clock=clock)
+    assert e.settings["brightness"] == E.DEFAULT_SETTINGS["brightness"] == 0.25
+    assert e.settings["fp_pedal"] == "longer" and e.settings["palette"] == "distinct"
+    e.set_setting("brightness", 0.40)       # chosen on purpose after the migration: kept
+    saved = json.loads((tmp_path / "settings.json").read_text(encoding="utf-8"))
+    assert saved["settings_version"] == E.SETTINGS_VERSION and "fp_sustain" not in saved
+    assert E.Engine(str(tmp_path), [], clock=clock).settings["brightness"] == 0.40
+    (tmp_path / "settings.json").write_text(json.dumps({"fp_sustain": False}), encoding="utf-8")
+    assert E.Engine(str(tmp_path), [], clock=clock).settings["fp_pedal"] == "off"
 
 
 def test_a_live_attempt_takes_the_bar_and_free_play_gets_it_back(eng):
@@ -442,11 +470,13 @@ def test_free_play_settings_validate_and_persist(eng, tmp_path, clock):
     eng.set_setting("fp_style", "split")
     eng.set_setting("fp_color2", "#ABCDEF")
     eng.set_setting("fp_split", 500)
-    eng.set_setting("fp_sustain", "false")
+    eng.set_setting("fp_pedal", "hold")
+    eng.set_setting("fp_strike", "flash")
     assert eng.settings["fp_color2"] == "#abcdef"
     assert eng.settings["fp_split"] == 108
-    assert eng.settings["fp_sustain"] is False
-    for k, v in (("fp_style", "strobe"), ("fp_color", "#12345"), ("fp_sustain", "maybe")):
+    assert eng._look.pedal == "hold" and eng._look.hold_floor == 0.12
+    for k, v in (("fp_style", "strobe"), ("fp_color", "#12345"), ("fp_pedal", "maybe"),
+                 ("fp_strike", "loud"), ("fp_sustain", True)):
         with pytest.raises(ValueError):
             eng.set_setting(k, v)
     again = E.Engine(str(tmp_path), [], clock=clock)

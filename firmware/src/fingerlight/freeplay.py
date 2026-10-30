@@ -13,8 +13,15 @@ Four colour styles (`STYLES`):
 * ``velocity`` -- soft is cool and dim, hard is hot and bright.  The only style that
   reads velocity; the others light at full level however softly a key is played.
 
-The sustain pedal holds released keys lit (when `Look.sustain` is on) until the pedal
-comes up, then they fade like any other release.
+How a key's light moves, modelled on a struck string:
+
+* **Strike** (`Look.strike`) -- a key lights at full and, while held, eases down over
+  `DECAY_MS` to a glow: ``steady`` stays full, ``soft`` settles at 40 %, ``flash`` at 12 %.
+* **Release** -- from wherever it is, a quadratic fade to dark over `fade_ms`.
+* **Pedal** (`Look.pedal`) -- ``longer`` (default): while the sustain pedal is down,
+  releases fade `PEDAL_FADE_X` times slower (at least `PEDAL_FADE_MIN_MS`); lifting it
+  cuts every tail still glowing back to the normal fade, like dampers coming down.
+  ``hold``: released keys stay lit until the pedal comes up.  ``off``: ignored.
 
 Pure logic, like `practice.py`: no MIDI, no LEDs, no threads.  Time is passed in, so
 the fades are tested exactly rather than slept for.
@@ -42,6 +49,15 @@ VELOCITY_FLOOR = 0.30
 #: on forever at an invisible level through float rounding.
 DARK = 1.0 / 255
 
+#: Strike: how a held key settles, and the level it settles to per `Look.strike`.
+DECAY_MS = 1200
+STRIKES = {"steady": 1.0, "soft": 0.40, "flash": 0.12}
+
+#: Pedal "longer": the release fade under the pedal.
+PEDAL_MODES = ("off", "longer", "hold")
+PEDAL_FADE_X = 4
+PEDAL_FADE_MIN_MS = 1500
+
 
 def parse_hex(text: str) -> RGB:
     """"#rrggbb" -> (r, g, b).  Raises ValueError on anything else."""
@@ -60,7 +76,17 @@ class Look:
     color2: RGB = (0, 230, 200)         # split: the split key and above
     split: int = 60                     # C4
     fade_ms: int = 400                  # 0 = off the instant the key is released
-    sustain: bool = True                # the pedal holds released keys lit
+    strike: str = "soft"                # STRIKES: how a held key settles
+    pedal: str = "longer"               # PEDAL_MODES
+
+    @property
+    def hold_floor(self) -> float:
+        return STRIKES.get(self.strike, 1.0)
+
+    def release_ms(self, pedal_down: bool) -> float:
+        if pedal_down and self.pedal == "longer":
+            return max(self.fade_ms * PEDAL_FADE_X, PEDAL_FADE_MIN_MS)
+        return self.fade_ms
 
     def color_for(self, pitch: int, velocity: int) -> RGB:
         if self.style == "split":
@@ -86,8 +112,11 @@ class Look:
 @dataclass
 class _Lit:
     velocity: int
+    struck_at: float
     down: bool = True                   # the key is held
-    released_at: float | None = None    # when the fade began; None while held/sustained
+    released_at: float | None = None    # when the current fade began; None = not fading
+    start: float = 1.0                  # the level that fade began from
+    fade_s: float = 0.0                 # how long that fade lasts
 
 
 @dataclass
@@ -98,40 +127,69 @@ class FreePlay:
     pedal: bool = False
 
     def note_on(self, pitch: int, velocity: int = 100, t: float = 0.0) -> None:
-        self.lit[pitch] = _Lit(velocity=velocity)
+        self.lit[pitch] = _Lit(velocity=velocity, struck_at=t)
 
-    def note_off(self, pitch: int, t: float = 0.0, sustain: bool = True) -> None:
+    def note_off(self, pitch: int, t: float, look: Look) -> None:
         n = self.lit.get(pitch)
         if n is None or not n.down:
             return
         n.down = False
-        if not (self.pedal and sustain):
-            n.released_at = t
+        if not (self.pedal and look.pedal == "hold"):
+            self._fade(n, t, look)
 
-    def set_pedal(self, down: bool, t: float = 0.0) -> None:
-        if self.pedal and not down:
-            for n in self.lit.values():
-                if not n.down and n.released_at is None:
-                    n.released_at = t
+    def set_pedal(self, down: bool, t: float, look: Look) -> None:
+        """Pedal down lengthens every fade in progress; pedal up cuts them back.
+
+        Each fade is re-anchored at its current level, so the light never jumps -- only
+        the rate it is dimming at changes, like dampers lifting off or coming down."""
+        if down == self.pedal:
+            return
         self.pedal = down
+        new_s = look.release_ms(down) / 1000.0
+        for n in self.lit.values():
+            if n.down:
+                continue
+            if n.released_at is None:
+                if not down:                    # held by "hold": now it fades
+                    self._fade(n, t, look)
+            elif n.fade_s != new_s:             # fading: same level, new rate
+                self._fade(n, t, look)
+
+    def _fade(self, n: _Lit, t: float, look: Look) -> None:
+        n.start = self._unfaded(n, t, look) if n.released_at is None else self._faded(n, t)
+        n.released_at = t
+        n.fade_s = look.release_ms(self.pedal) / 1000.0
 
     def clear(self) -> None:
         self.lit.clear()
 
+    # ------------------------------------------------------------------- levels
+
+    @staticmethod
+    def _unfaded(n: _Lit, t: float, look: Look) -> float:
+        """Held (or held by the pedal): full at the strike, easing to the strike floor."""
+        floor = look.hold_floor
+        x = min(1.0, max(0.0, (t - n.struck_at) * 1000.0 / DECAY_MS))
+        return floor + (1.0 - floor) * (1.0 - x) ** 2
+
+    @staticmethod
+    def _faded(n: _Lit, t: float) -> float:
+        if n.fade_s <= 0:
+            return 0.0
+        x = min(1.0, max(0.0, (t - n.released_at) / n.fade_s))
+        lv = n.start * (1.0 - x) ** 2
+        return lv if lv >= DARK else 0.0
+
     def level(self, pitch: int, t: float, look: Look) -> float:
-        """0..1: 1 while held or sustained, then a quadratic fade to 0 over fade_ms."""
+        """0..1 for one key at time `t`."""
         n = self.lit.get(pitch)
         if n is None:
             return 0.0
-        if n.released_at is None:
-            if not n.down and not look.sustain:
-                return 0.0          # sustain switched off while the pedal held it
-            return 1.0
-        if look.fade_ms <= 0:
-            return 0.0
-        x = (t - n.released_at) * 1000.0 / look.fade_ms
-        lv = (1.0 - min(1.0, max(0.0, x))) ** 2
-        return lv if lv >= DARK else 0.0
+        if n.released_at is not None:
+            return self._faded(n, t)
+        if not n.down and look.pedal != "hold":
+            return 0.0              # was held by "hold", and the setting has changed
+        return self._unfaded(n, t, look)
 
     def prune(self, t: float, look: Look) -> bool:
         """Forget keys that have faded out.  Returns whether anything was dropped."""
@@ -139,11 +197,6 @@ class FreePlay:
         for p in gone:
             del self.lit[p]
         return bool(gone)
-
-    def fading(self, t: float, look: Look) -> bool:
-        """Is any key mid-fade?  The caller re-renders at its frame rate while so."""
-        return any(n.released_at is not None and 0.0 < self.level(p, t, look)
-                   for p, n in self.lit.items())
 
     def frame(self, t: float, look: Look, strip: StripSettings) -> dict[int, RGB]:
         """LED index -> RGB.  Both LEDs of a key's pair take its colour; where two keys
@@ -154,6 +207,8 @@ class FreePlay:
             if lv <= 0.0:
                 continue
             rgb = scale(look.color_for(p, self.lit[p].velocity), lv)
+            if rgb == (0, 0, 0):
+                continue
             for i in note_to_leds(p, strip):
                 old = pixels.get(i)
                 pixels[i] = rgb if old is None else tuple(max(a, b) for a, b in zip(old, rgb))

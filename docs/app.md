@@ -191,14 +191,19 @@ Settings, all persisted in `settings.json` as `fp_*`:
 | Style | *solid* (one colour) · *split* (left / right of a split key) · *rainbow* (hue along the keyboard) · *velocity* (soft = dim teal, hard = bright red) |
 | Colour | ten swatches; in split style, pick the side first |
 | Split | the key where the right side starts, default C4 |
-| Release | fade 0 / 0.25 / 0.6 / 1.5 s, quadratic |
-| Sustain | *pedal holds*: a key released under the pedal stays lit until the pedal comes up |
+| Key press | a struck key lights at full, then eases over 1.2 s to a glow while held: *steady* (stays full) · *soft fade* (40 %, default) · *flash* (12 %) |
+| Release | fade 0 / 0.4 / 0.8 / 1.5 s, quadratic, from wherever the key's glow is |
+| Pedal | *longer* (default): releases under the pedal fade 4× slower (at least 1.5 s); lifting the pedal cuts every tail still glowing back to the normal fade, like dampers coming down — re-timed from the current level, so nothing jumps · *hold*: released keys stay lit until the pedal comes up · *pedal off* |
 
 The pedal is CC 64, now surfaced by `MidiDecoder(pedal=True)` as a `PedalEvent` (edges
 only, so half-pedalling does not flicker); the practice state machine still ignores it.
 Black keys get the same `BLACK_KEY_GAIN` as practice. Fades are drawn by the 50 Hz tick
-straight to the LEDs; the screens only hear about it once a key goes fully dark, so a fade
-does not push 50 state snapshots a second. Logic: `firmware/src/fingerlight/freeplay.py`.
+straight to the LEDs (an unchanged frame is not re-sent); the screens only hear about it
+once a key goes fully dark, so a fade does not push 50 state snapshots a second.
+
+The default brightness cap is **25 %** (was 40 %; 2026-10-30, after the first real run).
+A `settings.json` from before then whose brightness is still the old default moves to 25 %
+once; a value set on purpose is kept, and `fp_sustain` becomes `fp_pedal`. Logic: `firmware/src/fingerlight/freeplay.py`.
 
 **Calibrate** (Settings → *Calibrate keys…*). The generated map is analytic (one measured
 octave span); this screen corrects it **per key**, one LED (6.94 mm) at a time:

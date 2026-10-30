@@ -363,10 +363,12 @@ function renderFree() {
     '<div class="srow"><div class="k">Style</div>' +
     seg("fp_style", [["solid", "Solid"], ["split", "Split"], ["rainbow", "Rainbow"], ["velocity", "Velocity"]]) + "</div>" +
     colourRow + splitRow +
-    '<div class="srow"><div class="k">Release<small>fade time &middot; sustain pedal</small></div>' +
+    '<div class="srow"><div class="k">Key press<small>a held key eases down to a glow</small></div>' +
+    seg("fp_strike", [["steady", "steady"], ["soft", "soft fade"], ["flash", "flash"]]) + "</div>" +
+    '<div class="srow"><div class="k">Release &middot; pedal<small>fade after the key &middot; pedal: longer fades</small></div>' +
     '<div style="display:flex;gap:14px;align-items:center">' +
-    seg("fp_fade_ms", [[0, "off"], [250, "0.25 s"], [600, "0.6 s"], [1500, "1.5 s"]]) +
-    '<div style="flex:1"></div>' + seg("fp_sustain", [[true, "pedal holds"], [false, "no pedal"]]) +
+    seg("fp_fade_ms", [[0, "off"], [400, "0.4 s"], [800, "0.8 s"], [1500, "1.5 s"]]) +
+    '<div style="flex:1"></div>' + seg("fp_pedal", [["off", "pedal off"], ["longer", "longer"], ["hold", "hold"]]) +
     "</div></div>" +
     "</div></div>";
 }
