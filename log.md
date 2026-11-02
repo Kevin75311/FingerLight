@@ -1302,6 +1302,57 @@ Chromium at 800x480: Free play in every style -> 0 elements outside the panel, 0
 
 ---
 
+## 2026-11-02 — Flicker on the real bar: frames ran together
+
+Kevin: with the strike/fade update, pressing a key flashed LED 0 green, and the bar
+jittered — random LEDs blanking, random colours. The version before did not.
+
+**Diagnosis** (from the code; the bar itself was not available to this session)
+- The SPI driver put only **60 µs** of low after each frame and **none before** it. The
+  original WS2812 latches after 50 µs, but the WS2812B-V5 and current clones need **280
+  µs**. Two frames closer than that run into one and the chips latch a mix.
+- The update made frames close together common: a key press now draws one frame from the
+  MIDI thread *and* starts the decay, so the 50 Hz tick — often already waiting on the
+  engine lock — sends a second immediately after. The previous version drew nothing on
+  the tick for a held key, so presses never produced a pair. Total frame count barely
+  changed (160 → 182 for the same 8-note phrase); the *spacing* did.
+- LED 0 flashing green fits a frame shifted by one bit: G is the first byte, so a stray
+  leading 1 lands in LED 0's green MSB, and every LED after it is misread — the "random
+  colours".
+
+**Done**
+- `ws2812_spi.Strip`: **300 µs of low before and after every frame** (`RESET_US`), so any
+  two frames have ≥ 600 µs between them and each starts from a clean low line. Frame 2136
+  → 2352 bytes, still one transfer at spidev's stock 4096.
+- `Strip.show()` skips a frame **byte-identical** to the last one sent (after brightness);
+  `force=True` overrides.
+- **One process per strip**: `Strip.open()` takes an exclusive `flock`
+  (`/run/lock/fingerlight-spi0.0.lock`). A second program — `smoke.py` while the app runs —
+  now fails with "already in use by pid N … sudo systemctl stop fingerlight" instead of
+  interleaving its frames with the app's.
+- Engine: free-play **animation capped at 30 fps** (`ANIM_FPS`); key presses are still
+  drawn at once. Same phrase: 182 → 102 frames, below the old version's 160.
+- `led_test.py steady`: a static pattern re-sent every frame (`--fps 0` = back to back);
+  any flicker is the wire, not an effect. `--reset-us 60` reproduces the old wire, for an
+  A/B on the bar.
+
+**Evidence**
+```
+python tools/hw/ws2812_spi.py --selftest -> PASS (incl. low >= 280 us both ends, dedupe)
+python -m pytest firmware/tests score/tests app/tests tools/tests -q -> 278 passed
+```
+
+**Verified vs. assumed**
+- VERIFIED on the PC: the wire bytes, the lock across processes, the frame counts.
+- **ASSUMED, needs the bar:** that latch time is the cause. The A/B is one command each:
+  `led_test.py steady --fps 0 --secs 20 --reset-us 60` should flicker, and the same
+  without `--reset-us` should not. If both flicker, it is the signal path (level shifter,
+  ground, 330 Ω), and the next step is a scope on DIN — or RP1 PIO / a Pico ([build](docs/build.md)).
+
+**Next:** that A/B on the bar, then free play by ear and eye.
+
+---
+
 ## Entry template
 
 ```markdown

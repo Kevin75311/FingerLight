@@ -56,7 +56,9 @@ def main():
         for tok in cmdline.split():
             if tok.startswith("spidev.bufsiz="):
                 bufsiz = int(tok.split("=", 1)[1])
-        need = 2136                                  # this bar, measured by ws2812_spi
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from ws2812_spi import Strip
+        need = len(Strip(176).frame())               # this bar, resets included
         check("spidev buffer", (bufsiz or 4096) >= need,
               "%d bytes available, this bar needs %d per frame"
               % (bufsiz or 4096, need),

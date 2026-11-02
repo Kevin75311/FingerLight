@@ -36,6 +36,8 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "firmware", "src"))
 
+from ws2812_spi import RESET_US  # noqa: E402
+
 STAGES = [
     ("first", "SPI reaches the strip at all, and the data line survives the level shifter"),
     ("walk", "every LED works, in the order you think, with no dead or skipped pixel"),
@@ -44,6 +46,7 @@ STAGES = [
     ("current", "the supply holds up: measure amps here, not later"),
     ("map", "the firmware's note->LED map lands on the keys you expect"),
     ("sweep", "the whole keyboard, end to end, at the pitch the design assumes"),
+    ("steady", "the wire survives many frames: a static pattern, re-sent, must not flicker"),
 ]
 
 
@@ -69,7 +72,7 @@ def make_strip(args):
     from ws2812_spi import Strip
 
     s = Strip(args.n, order=args.order, hz=args.hz, brightness=args.brightness,
-              mirror=args.mirror)
+              mirror=args.mirror, reset_us=args.reset_us)
     if args.one_pattern:
         from ws2812_spi import _table
         s._table = _table(0b1000, int(args.one_pattern, 2))
@@ -202,9 +205,39 @@ def stage_sweep(s, args):
     s.show()
 
 
+def stage_steady(s, args):
+    """The same frame, over and over: the strip must look perfectly still.
+
+    Isolates the wire from the app.  If this flickers, the fault is in the transfer
+    (timing, latch, level shifter, ground), not in any effect.  `--fps 0` sends frames
+    back to back, the worst case; `--reset-us 60` reproduces the pre-2026-11-02 wire for
+    an A/B comparison."""
+    say("three dim amber pairs (A0, C4, C8) and nothing else, perfectly still for %.0f s. "
+        "ANY flash, colour change, or LED blinking on or off is a transfer glitch -- "
+        "watch LED 0 (the data-input end) especially." % args.secs)
+    from fingerlight import notemap
+
+    settings = notemap.StripSettings.load()
+    s.clear()
+    for midi in (21, 60, 108):
+        for i in notemap.note_to_leds(midi, settings):
+            s[i] = (255, 176, 96)
+    frames, end = 0, time.monotonic() + (0 if args.dry_run else args.secs)
+    period = 1.0 / args.fps if args.fps > 0 else 0.0
+    while True:
+        s.show(force=True)                  # re-send the identical frame on purpose
+        frames += 1
+        if time.monotonic() >= end:
+            break
+        if period:
+            time.sleep(period)
+    print("  sent %d identical frames, %.0f us of low around each"
+          % (frames, len(s._reset) * 8 / args.hz * 1e6))
+
+
 STAGE_FN = {"first": stage_first, "walk": stage_walk, "count": stage_count,
             "order": stage_order, "current": stage_current, "map": stage_map,
-            "sweep": stage_sweep}
+            "sweep": stage_sweep, "steady": stage_steady}
 
 
 # ------------------------------------------------------------------ effects
@@ -401,7 +434,10 @@ def main():
     ap.add_argument("--hold", type=float, default=3.0, help="seconds to hold a static test")
     ap.add_argument("--pct", type=int, default=25, help="white level for the current stage")
     ap.add_argument("--secs", type=float, default=10.0, help="seconds per effect, fx")
-    ap.add_argument("--fps", type=int, default=60, help="frames per second, fx")
+    ap.add_argument("--fps", type=int, default=60,
+                    help="frames per second, fx and steady (steady: 0 = back to back)")
+    ap.add_argument("--reset-us", type=int, default=RESET_US,
+                    help="low time around each frame (default %(default)s; 60 = the old wire)")
     ap.add_argument("--dry-run", action="store_true",
                     help="no SPI: print what would be sent (works on any machine)")
     ap.add_argument("--one-pattern", default="", help="e.g. 1100 to shorten T1H if a strip is fussy")

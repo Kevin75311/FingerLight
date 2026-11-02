@@ -106,6 +106,7 @@ python3 tools/hw/led_test.py walk
 python3 tools/hw/led_test.py count
 python3 tools/hw/led_test.py order
 python3 tools/hw/led_test.py current --pct 25
+python3 tools/hw/led_test.py steady --fps 0 --secs 20     # back-to-back frames: must not flicker
 ```
 
 Each stage prints what you should **see**. Where they disagree with reality, that is the
@@ -118,6 +119,8 @@ finding:
 | red shows green | wire order is not GRB — pass `--order RGB` and note it |
 | `count` blue is not the last LED | the strip is not 176 LEDs; fix the strip, not the map |
 | far end dim or pink at 25 % | voltage drop — inject power at the far end |
+| `steady` flickers: LED 0 flashes green, random colours, LEDs blink off | frames run together or a stray bit leads a frame. The driver wraps every frame in 300 µs of low (WS2812B-V5 needs 280 µs to latch); `--reset-us 60` reproduces the old wire for comparison. Still flickering at 300 → level shifter, ground or the 330 Ω — hardware, not timing |
+| `the LED strip is already in use by …` | the app (or another test) holds the strip: `sudo systemctl stop fingerlight` first |
 
 **Pass:** all six stages match what they said to look for, and the current at 25 % white is
 near the ~2.6 A the stage predicts.

@@ -18,7 +18,7 @@ from ws2812_spi import Strip  # noqa: E402
 
 def lit_on_wire(strip):
     """Wire positions (0 = first LED after the Pi) whose 12 bytes are not all-zero."""
-    f = strip.frame()
+    f = strip.frame()[len(strip._reset):]          # pixels start after the lead-in
     zero = strip._table[0] * 3
     return [i for i in range(strip.n) if f[i * 12:(i + 1) * 12] != zero]
 

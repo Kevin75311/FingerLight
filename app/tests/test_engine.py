@@ -590,3 +590,15 @@ def test_led_mirror_is_a_saved_setting_and_reaches_the_sink(tmp_path, clock):
     assert e.settings["led_mirror"] is True
     sink = leds.make_sink("dry", e.strip.led_count, "GRB", "1110", e.settings["led_mirror"])
     assert sink.strip.mirror is True
+
+
+def test_free_play_animation_is_capped_but_key_presses_are_not(eng, clock):
+    eng.note(60, True)                      # strike: drawn at once
+    n = len(eng.led_sink.frames)
+    for _ in range(50):                     # one second of 50 Hz ticks while it decays
+        clock.t += 0.02
+        eng.tick()
+    anim = len(eng.led_sink.frames) - n
+    assert anim <= E.ANIM_FPS + 1, "animation frames per second"
+    eng.note(64, True)                      # a new key is not held back by the cap
+    assert len(eng.led_sink.frames) == n + anim + 1

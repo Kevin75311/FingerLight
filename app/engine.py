@@ -103,6 +103,11 @@ CAL_BELOW = (90, 40, 0)                 # the key to the left, dim amber
 CAL_ABOVE = (0, 70, 55)                 # the key to the right, dim teal
 OFFSETS_FORMAT = "fingerlight-led-offsets"
 
+#: Free play animates (strike decay, release fades) at this many frames a second at
+#: most.  Key presses are drawn at once, outside this cap.  Every SPI frame is a chance
+#: for a glitch on the strip, and 30 is smooth for a fade through a diffuser.
+ANIM_FPS = 30
+
 #: Free play's "recently played" strip on the screen.
 RECENT_NOTES = 12
 
@@ -345,6 +350,7 @@ class Engine:
         self.recent: deque[int] = deque(maxlen=RECENT_NOTES)
         self.calib: Calibration | None = None
         self._look = self._make_look()
+        self._anim_at = float("-inf")         # when free play last drew an animation step
         self.rescan()
 
     # ------------------------------------------------------------------ plumbing
@@ -739,7 +745,9 @@ class Engine:
         if not self.freeplay.lit or self.bar_owner() != "free":
             return
         now = self.clock()
-        self._render_leds()                     # a fade step: LEDs only, no state push;
+        if now - self._anim_at >= 1.0 / ANIM_FPS - 1e-6:
+            self._anim_at = now
+            self._render_leds()                 # a fade step: LEDs only, no state push;
                                                 # an unchanged frame is not re-sent
         if self.freeplay.prune(now, self._look):
             self._bump()                        # a key went dark: tell the screens
